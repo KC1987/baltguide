@@ -1,0 +1,27 @@
+{
+  "navigation": {
+    "home": "Startseite",
+    "map": "Karte",
+    "locations": "Orte",
+    "addAttraction": "Attraktion hinzufügen"
+  },
+  "common": {
+    "loading": "Lädt...",
+    "error": "Ein Fehler ist aufgetreten",
+    "search": "Suchen",
+    "filter": "Filter",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "close": "Schließen"
+  },
+  "map": {
+    "searchPlaceholder": "Orte suchen...",
+    "noResults": "Keine Ergebnisse gefunden"
+  },
+  "locations": {
+    "title": "Orte erkunden",
+    "description": "Entdecken Sie erstaunliche Orte in der Baltischen Region"
+  }
+}

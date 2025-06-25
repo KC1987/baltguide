@@ -1,9 +1,9 @@
 // src/components/map/PopupInfo.js
-'use client';
+"use client";
 
-import React from 'react';
-import { Button } from '@heroui/button';
-import { Link } from '@heroui/link';
+import React from "react";
+import { Button } from "@heroui/button";
+import { Link } from "@heroui/link";
 
 // You can define a more specific type for featureData if you like
 // interface FeatureData {
@@ -25,7 +25,9 @@ export default function PopupInfo({ featureData }) {
     <div className="popup-info-content">
       <h3 className="text-lg font-semibold mb-1">{featureData.name}</h3>
       <p className="text-sm">{featureData.description}</p>
-      <Button><Link href={`/location/${featureData.slug}`} >Details</Link></Button>
+      <Button>
+        <Link href={`/location/${featureData.slug}`}>Details</Link>
+      </Button>
       {/* You can add more details from featureData here if needed:
         {featureData.imageUrl && (
           <img 

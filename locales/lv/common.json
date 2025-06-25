@@ -1,0 +1,27 @@
+{
+  "navigation": {
+    "home": "Sākums",
+    "map": "Karte",
+    "locations": "Vietas",
+    "addAttraction": "Pievienot atrakciju"
+  },
+  "common": {
+    "loading": "Ielādē...",
+    "error": "Radās kļūda",
+    "search": "Meklēt",
+    "filter": "Filtrs",
+    "save": "Saglabāt",
+    "cancel": "Atcelt",
+    "delete": "Dzēst",
+    "edit": "Rediģēt",
+    "close": "Aizvērt"
+  },
+  "map": {
+    "searchPlaceholder": "Meklēt vietas...",
+    "noResults": "Nav rezultātu"
+  },
+  "locations": {
+    "title": "Izpētīt vietas",
+    "description": "Atklājiet brīnišķīgas vietas Baltijas reģionā"
+  }
+}

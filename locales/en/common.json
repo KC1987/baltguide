@@ -1,0 +1,27 @@
+{
+  "navigation": {
+    "home": "Home",
+    "map": "Map",
+    "locations": "Locations",
+    "addAttraction": "Add Attraction"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "search": "Search",
+    "filter": "Filter",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close"
+  },
+  "map": {
+    "searchPlaceholder": "Search locations...",
+    "noResults": "No results found"
+  },
+  "locations": {
+    "title": "Explore Locations",
+    "description": "Discover amazing places in the Baltic region"
+  }
+}

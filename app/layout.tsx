@@ -54,7 +54,9 @@ export default function RootLayout({
                 href="https://heroui.com?utm_source=next-app-template"
                 title="heroui.com homepage"
               >
-                <span className="text-default-600 text-sm">Made with ❤️ in Riga, Latvia 2025</span>
+                <span className="text-default-600 text-sm">
+                  Made with ❤️ in Riga, Latvia 2025
+                </span>
               </Link>
             </footer>
           </div>

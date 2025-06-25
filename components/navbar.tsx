@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
@@ -12,21 +14,42 @@ import { Kbd } from "@heroui/kbd";
 import { Link } from "@heroui/link";
 import { Input } from "@heroui/input";
 import { link as linkStyles } from "@heroui/theme";
+import { User } from "@heroui/react";
 import NextLink from "next/link";
 import clsx from "clsx";
+import localFont from "next/font/local";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
+import LanguageSelector from "@/components/LanguageSelector";
+import TranslationProvider from "@/components/TranslationProvider";
+import { useTranslation } from "@/lib/i18n";
 import {
   TwitterIcon,
   GithubIcon,
   DiscordIcon,
   HeartFilledIcon,
   SearchIcon,
-  Logo,
 } from "@/components/icons";
 
-export const Navbar = () => {
+const bauhaus = localFont({
+  src: [
+    {
+      path: "../public/fonts/BauhausRegular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/BauhausBold.ttf",
+      weight: "700",
+      style: "bold",
+    },
+  ],
+});
+
+function NavbarMain() {
+  const { t } = useTranslation();
+
   const searchInput = (
     <Input
       aria-label="Search"
@@ -40,7 +63,7 @@ export const Navbar = () => {
         </Kbd>
       }
       labelPlacement="outside"
-      placeholder="Search..."
+      placeholder={t("common.search")}
       startContent={
         <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
       }
@@ -53,8 +76,12 @@ export const Navbar = () => {
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
-            <Logo />
-            <p className="font-bold text-inherit">baltguide</p>
+            {/* <Logo /> */}
+            <p
+              className={`${bauhaus.className} text-sky-400 dark:text-sky-400 text-3xl font-bold`}
+            >
+              Baltguide
+            </p>
           </NextLink>
         </NavbarBrand>
         <ul className="hidden lg:flex gap-4 justify-start ml-2">
@@ -91,17 +118,26 @@ export const Navbar = () => {
           </Link>
           <ThemeSwitch />
         </NavbarItem>
-        <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
+        <NavbarItem className="hidden sm:flex">
+          <LanguageSelector />
+        </NavbarItem>
+        {/* <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem> */}
         <NavbarItem className="hidden md:flex">
           <Button
             isExternal
             as={Link}
             className="text-sm font-normal text-default-600 bg-default-100"
             href={siteConfig.links.sponsor}
-            startContent={<HeartFilledIcon className="text-danger" />}
+            // startContent={<HeartFilledIcon className="text-danger" />}
             variant="flat"
           >
-            Sponsor
+            <User
+              avatarProps={{
+                src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
+              }}
+              description="Product Designer"
+              name="Jane Doe"
+            />
           </Button>
         </NavbarItem>
       </NavbarContent>
@@ -137,5 +173,13 @@ export const Navbar = () => {
         </div>
       </NavbarMenu>
     </HeroUINavbar>
+  );
+}
+
+export const Navbar = () => {
+  return (
+    <TranslationProvider>
+      <NavbarMain />
+    </TranslationProvider>
   );
 };

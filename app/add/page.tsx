@@ -1,40 +1,40 @@
-'use client'
+"use client";
 
-import { useState } from "react"
-import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem} from "@heroui/react";
+import { useState } from "react";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+} from "@heroui/react";
+import { Button } from "@heroui/button";
+import { addDoc, collection } from "firebase/firestore";
 
-
-
-import { Button } from "@heroui/button"
-import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
-import { db } from '@/config/firebase';
-
+import { db } from "@/config/firebase";
 
 export default function Add() {
-  const [wifiKeys, setWifiKeys] = useState( new Set([]) );
+  const [wifiKeys, setWifiKeys] = useState(new Set([]));
 
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
 
-  async function handleSubmit(e:any) {
+  async function handleSubmit(e: any) {
     e.preventDefault();
 
     // const docRef = doc( db, "locations", "restaurants" );
-    const collectionRef = collection( db, "locations" );
+    const collectionRef = collection(db, "locations");
 
     try {
-      await addDoc(
-        collectionRef,
-        { name,
-          slug,
-          wifi: Array.from(wifiKeys),
-          type: "restaurant", }
-      )
+      await addDoc(collectionRef, {
+        name,
+        slug,
+        wifi: Array.from(wifiKeys),
+        type: "restaurant",
+      });
     } catch (error) {
       console.error(error);
     }
-
-  };
+  }
 
   return (
     <div>
@@ -42,10 +42,20 @@ export default function Add() {
       <h1>Add</h1>
       <form onSubmit={handleSubmit}>
         <div>
-          <input type="text" value={name} placeholder="name" onChange={ e => setName(e.target.value) }/>
+          <input
+            placeholder="name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
         </div>
         <div>
-          <input type="text" value={slug} placeholder="slug" onChange={ e => setSlug(e.target.value) }/>
+          <input
+            placeholder="slug"
+            type="text"
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+          />
         </div>
 
         <Dropdown>
@@ -62,17 +72,16 @@ export default function Add() {
             variant="flat"
             onSelectionChange={setWifiKeys}
           >
-            <DropdownItem key="free" >Free</DropdownItem>
-            <DropdownItem key="free-limited" >Free Limited</DropdownItem>
-            <DropdownItem key="paid" >Paid</DropdownItem>
-            <DropdownItem key="none" >None</DropdownItem>
-
+            <DropdownItem key="free">Free</DropdownItem>
+            <DropdownItem key="free-limited">Free Limited</DropdownItem>
+            <DropdownItem key="paid">Paid</DropdownItem>
+            <DropdownItem key="none">None</DropdownItem>
           </DropdownMenu>
         </Dropdown>
         <div>
-          <Button type="submit" >Submit Loacation</Button>
+          <Button type="submit">Submit Loacation</Button>
         </div>
       </form>
     </div>
-  )
+  );
 }
