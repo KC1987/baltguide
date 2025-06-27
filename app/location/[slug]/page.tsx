@@ -3,6 +3,7 @@ import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { notFound } from "next/navigation";
 import Gallery from "@/components/location/Gallery";
+import LocationIcons from "@/components/location/LocationIcons";
 
 import BreadcrumbsComponent from "@/components/location/Breadcrumbs";
 import Rating from "@/components/location/Rating";
@@ -16,15 +17,17 @@ interface LocationData {
   city: string;
   rating: number;
   quote: string;
-  images: string[];
-  imageUrls?: string[];
+  images: [];
   wifi?: string[];
   familyFriendly?: boolean;
   description: string;
   url: string;
-  phone: string;
+  phone: ["", "", ""];
   address: string;
   features?: string[];
+  petfriendly: boolean;
+  free_entry: boolean;
+  open_24hrs: boolean;
 }
 
 interface PageProps {
@@ -46,7 +49,6 @@ export default async function Page({ params }: PageProps) {
       .eq("slug", slug)
       .single(); // Use .single() instead of accessing [0]
 
-    console.log(data);
 
     if (error) {
       console.error("Supabase error:", error);
@@ -56,7 +58,7 @@ export default async function Page({ params }: PageProps) {
     if (!data) {
       notFound(); // Handle case where location doesn't exist
     }
-
+    console.log(data)
     location = data;
   } catch (error) {
     console.error("Failed to fetch location:", error);
@@ -67,7 +69,7 @@ export default async function Page({ params }: PageProps) {
     <section className="flex flex-col container mx-auto px-4 gap-6 scroll-smooth py-6">
       {/* Breadcrumbs and Navigation */}
       <div className="flex items-center gap-2">
-        <BreadcrumbsComponent city={location.city} country={location.country} />
+        <BreadcrumbsComponent city={location?.city} country={location?.country} />
       </div>
 
       {/* Title with Family Friendly indicator */}
@@ -80,14 +82,21 @@ export default async function Page({ params }: PageProps) {
         )}
       </div>
 
+      {/* Icons */}
+      <LocationIcons
+        family_friendly={location?.familyFriendly}
+        petfriendly={location?.petfriendly}
+        open_24hrs={location?.open_24hrs}
+        free_entry={location?.free_entry}
+      />
+
       {/* Rating */}
       <Rating quote={location.quote} rating={location.rating} />
 
       {/* Gallery */}
        <div className="h-[400px] md:h-[500px] scroll-m-16" id="gallery">
-        <Gallery images={location?.images || location?.imageUrls || []} />
-      </div> 
-
+        <Gallery images={location?.images || []} />
+      </div>  
       {/* Sticky Navigation Tabs */}
       <div className="sticky top-0 z-40 bg-white dark:bg-gray-900 py-4">
         <div className="flex gap-4">
@@ -207,16 +216,14 @@ export default async function Page({ params }: PageProps) {
             </div>
           )}
           {location.phone && (
-            <div>
-              <span className="font-medium text-gray-700 dark:text-gray-200">
-                Phone:{" "}
-              </span>
-              <Link
-                className="text-gray-600 dark:text-gray-300 hover:text-sky-600"
-                href={`tel:${location.phone}`}
-              >
-                {location.phone}
-              </Link>
+            <div className="gap-2">
+              <p>Phone Number(s):</p>
+              {location?.phone.map( tel => (
+                <div>
+                  <a href={`tel:${tel}`} className="font-medium hover:text-sky-500">{tel}</a>
+                </div>
+              ))}
+
             </div>
           )}
           {location.address && (

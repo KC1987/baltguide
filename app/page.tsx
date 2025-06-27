@@ -15,6 +15,10 @@ function HomePage() {
 
   useEffect(() => {
     async function getLocations() {
+
+      console.log((await supabase.auth.getSession()).data)
+
+
       const { data, error } = await supabase.from("locations").select("*");
       // .eq("country", "Latvia")
 

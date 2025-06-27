@@ -17,6 +17,7 @@ import Sidebar from "@/components/map/Sidebar";
 import PopupInfo from "@/components/map/MarkerPopup";
 import { createClient } from "@/config/supabase/client";
 import FilterMain from "@/components/map/FilterMain";
+import Icons from "@/components/location/LocationIcons";
 
 // Constants for map configuration
 const MAPBOX_STYLE_ID = "cmapseqwe01mz01qyc4ma5m7a";
@@ -39,8 +40,9 @@ export default function Page() {
   const supabase = createClient();
 
   // State management
+  const [geolocation, setGeolocation] = useState(null);
   const [activeMarker, setActiveMarker] = useState(null);
-  const [filter, setFilter] = useState({});
+  const [filter, setFilter] = useState({ searchText: "" });
   const [markers, setMarkers] = useState([]);
   const [selectedFeatureData, setSelectedFeatureData] = useState(null);
   
@@ -75,14 +77,21 @@ export default function Page() {
 
       // Apply dynamic filters
       Object.entries(filter).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== "any") {
-          if (typeof value === "string" && value.length > 0) {
+        if (key === "searchText") return;
+
+        if (value !== undefined && value !== null && value !== "any" && value !== false) {
+          if (typeof value === "string" && value.length > 0 || typeof value === "boolean") {
             query = query.eq(key, value);
           } else if (Array.isArray(value) && value.length > 0) {
             query = query.overlaps(key, value);
           }
         }
       });
+
+      // Apply text search
+      if ( filter.searchText?.trim().length > 3 ) {
+        query = query.ilike("name", `%${filter.searchText.trim()}%`);
+      }
 
       const { data: attractionData, error } = await query;
 
@@ -406,6 +415,8 @@ export default function Page() {
         filter={filter}
         getAttractions={getAttractions}
         setFilter={setFilter}
+        geolocation={geolocation}
+        setGeolocation={setGeolocation}
       />
       
       <div className="flex flex-1 h-full overflow-hidden">

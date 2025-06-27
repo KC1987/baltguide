@@ -1,5 +1,8 @@
 "use client";
 
+import { useContext } from "react";
+import { AuthContext } from "@/contexts/AuthContext";
+
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
@@ -14,7 +17,7 @@ import { Kbd } from "@heroui/kbd";
 import { Link } from "@heroui/link";
 import { Input } from "@heroui/input";
 import { link as linkStyles } from "@heroui/theme";
-import { User } from "@heroui/react";
+import { DividerProps, User } from "@heroui/react";
 import NextLink from "next/link";
 import clsx from "clsx";
 import localFont from "next/font/local";
@@ -48,6 +51,7 @@ const bauhaus = localFont({
 });
 
 function NavbarMain() {
+  const { session, user, loading } = useContext(AuthContext);
   const { t } = useTranslation();
 
   const searchInput = (
@@ -122,24 +126,46 @@ function NavbarMain() {
           <LanguageSelector />
         </NavbarItem>
         {/* <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem> */}
-        <NavbarItem className="hidden md:flex">
-          <Button
-            isExternal
-            as={Link}
-            className="text-sm font-normal text-default-600 bg-default-100"
-            href={siteConfig.links.sponsor}
-            // startContent={<HeartFilledIcon className="text-danger" />}
-            variant="flat"
-          >
-            <User
-              avatarProps={{
-                src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
-              }}
-              description="Product Designer"
-              name="Jane Doe"
-            />
-          </Button>
+
+
+        {user ? (
+          <NavbarItem className="hidden md:flex">
+            <Button
+              // isExternal
+              as={Link}
+              className="text-sm font-normal text-default-600 bg-default-100"
+              href="/account"
+              // startContent={<HeartFilledIcon className="text-danger" />}
+              variant="flat"
+            >
+              <User
+                avatarProps={{
+                  src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
+                }}
+                description="Product Designer"
+                name="Jane Doe"
+              />
+            </Button>
+          </NavbarItem>
+        ) : (
+        <div>
+          <NavbarItem className="hidden md:flex gap-2">
+            <Button href="/login" as={Link} color="warning" size="sm" >Login</Button>
+            <Button href="/register" as={Link} color="secondary" size="sm" >Register</Button>
+          </NavbarItem>
+        </div>
+        )}
+        <NavbarItem>
+          <Button onPress={() => console.log(user, session)} size="sm" >Log Session</Button>
         </NavbarItem>
+
+
+
+
+
+
+
+
       </NavbarContent>
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
