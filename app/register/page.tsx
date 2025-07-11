@@ -23,10 +23,11 @@ export default function Page() {
 
     supabase.auth.signUp({
       email,
-      password: password,
+      password,
       options: {
         data: {
-          username
+          username,
+          favourite_locations: [],
         }
       }
     }).then( res => {

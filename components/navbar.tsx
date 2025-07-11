@@ -143,7 +143,7 @@ function NavbarMain() {
                   src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
                 }}
                 description="Product Designer"
-                name="Jane Doe"
+                name={user.user_metadata.username || "User"}
               />
             </Button>
           </NavbarItem>

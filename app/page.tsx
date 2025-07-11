@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { AuthContext } from "@/contexts/AuthContext";
 import { Link } from "@heroui/link";
 
 import { createClient } from "@/config/supabase/client";
@@ -13,10 +14,12 @@ function HomePage() {
 
   const supabase = createClient();
 
+  const { session, user, loading } = useContext(AuthContext);
+
   useEffect(() => {
     async function getLocations() {
 
-      console.log((await supabase.auth.getSession()).data)
+      // console.log((await supabase.auth.getSession()).data)
 
 
       const { data, error } = await supabase.from("locations").select("*");
@@ -38,6 +41,7 @@ function HomePage() {
 
   return (
     <div>
+      <button onClick={() => console.log(user, session)} >Log User Context</button>
       <h1>{t("locations.title")}</h1>
       <p>{t("locations.description")}</p>
       <Link href="/map">{t("navigation.map")}</Link>

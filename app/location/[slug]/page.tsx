@@ -7,10 +7,11 @@ import LocationIcons from "@/components/location/LocationIcons";
 
 import BreadcrumbsComponent from "@/components/location/Breadcrumbs";
 import Rating from "@/components/location/Rating";
+import Favourite from "@/components/location/Favourite";
 import { createClient } from "@/config/supabase/server";
 
 interface LocationData {
-  id: string;
+  uid: string;
   slug: string;
   name: string;
   country: string;
@@ -74,6 +75,7 @@ export default async function Page({ params }: PageProps) {
 
       {/* Title with Family Friendly indicator */}
       <div className="flex items-center gap-3">
+        <Favourite uid={location?.uid} />
         <h1 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100">
           {location.name}
         </h1>
@@ -218,8 +220,8 @@ export default async function Page({ params }: PageProps) {
           {location.phone && (
             <div className="gap-2">
               <p>Phone Number(s):</p>
-              {location?.phone.map( tel => (
-                <div>
+              {location?.phone.map( (tel, i) => (
+                <div key={i}>
                   <a href={`tel:${tel}`} className="font-medium hover:text-sky-500">{tel}</a>
                 </div>
               ))}

@@ -1,0 +1,25 @@
+Create a new supabase db entry for location "". Analyse the json file for entry structure, then search the web for relevant info about location.
+
+"address" should include Street, City, Country and post code if available.
+"phone" is an array which may contain 1-3 phone numbers in "text" format.
+"url" may contain only location's personal website, or government / county url, or wikipedia url. If none is available, keep it empty string.
+"quote" a simple and concise description about location, should't exceed one simple sentence.
+"rating": 1-5 with 0.5 step. If possible, search the web for people reviews, and generate rating based on them.
+
+"images" ARRAY with jsonb for each image. Each jsonb contains the following keys: "url", "caption". Use only images from unsplash, pixabay, pexels, and government websites. NOT WIKIPEDIA.
+"admission_fee" and "opening_hours" may contain extensive descriptions about detailed explanations if they are available.
+
+"tags" is array which MUST contain ONLY tags from the tagList.ts file attached. This is a strict requirement with no exceptions:
+- Browse the tagList.ts file and identify which categories the location belongs to
+- Select appropriate tags EXCLUSIVELY from those category arrays in tagList.ts
+- Do NOT create, modify, or use any tags that are not explicitly listed in the tagList.ts file
+- Do NOT use generic terms, location names, or descriptive words as tags
+- Maximum 3-5 tags should be selected from the approved categories
+- If a perfect match doesn't exist in the tagList, choose the closest available alternative or use fewer tags
+- Double-check that every tag in your final array exists exactly as written in the tagList.ts file
+
+Working example file is attached for reference.
+
+Do not generate any extra columns which are not included in json schema.
+Generate supabase compatible sql code as output, it will then be used to add data to the table called "locations".
+Output sql code should be ready to use, and may not contain any inputs or comments which may cause command to crash.
