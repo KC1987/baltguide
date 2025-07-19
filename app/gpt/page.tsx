@@ -3,7 +3,7 @@
 import OpenAI from "openai";
 import { useState } from "react";
 import { Button } from "@heroui/react";
-import { CircularProgress } from "@heroui/progress";
+import { CircularProgress } from "@heroui/react";
 import { Input } from "@heroui/react";
 
 export default function Page() {

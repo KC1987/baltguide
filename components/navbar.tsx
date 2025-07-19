@@ -16,14 +16,16 @@ import { Kbd } from "@heroui/kbd";
 import { Link } from "@heroui/link";
 import { Input } from "@heroui/input";
 import { link as linkStyles } from "@heroui/theme";
-import { User } from "@heroui/react";
+
 import {
+  User,
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownSection,
   DropdownItem,
-} from "@heroui/dropdown";
+} from "@heroui/react";
+
 import NextLink from "next/link";
 import clsx from "clsx";
 import localFont from "next/font/local";
