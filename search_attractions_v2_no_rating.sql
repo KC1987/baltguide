@@ -1,0 +1,162 @@
+-- Drop all versions of the problematic function
+DROP FUNCTION IF EXISTS search_locations_comprehensive CASCADE;
+DROP FUNCTION IF EXISTS search_attractions_v2 CASCADE;
+
+-- Create function without rating filtering
+CREATE OR REPLACE FUNCTION search_attractions_v2(
+    center_lat DOUBLE PRECISION DEFAULT NULL,
+    center_lon DOUBLE PRECISION DEFAULT NULL,
+    radius_meters DOUBLE PRECISION DEFAULT NULL,
+    search_text TEXT DEFAULT NULL,
+    filter_city TEXT DEFAULT NULL,
+    filter_country TEXT DEFAULT NULL,
+    filter_petfriendly BOOLEAN DEFAULT NULL,
+    filter_family_friendly BOOLEAN DEFAULT NULL,
+    filter_open_24hrs BOOLEAN DEFAULT NULL,
+    filter_free_entry BOOLEAN DEFAULT NULL,
+    filter_souvenirs BOOLEAN DEFAULT NULL,
+    min_rating DOUBLE PRECISION DEFAULT NULL,
+    max_rating DOUBLE PRECISION DEFAULT NULL,
+    max_results INTEGER DEFAULT 100,
+    offset_results INTEGER DEFAULT 0,
+    sort_by TEXT DEFAULT 'name'
+)
+RETURNS TABLE(
+    name TEXT,
+    slug TEXT,
+    description TEXT,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
+    address TEXT,
+    city TEXT,
+    country TEXT,
+    petfriendly BOOLEAN,
+    family_friendly BOOLEAN,
+    open_24hrs BOOLEAN,
+    free_entry BOOLEAN,
+    rating DOUBLE PRECISION,
+    url TEXT,
+    admission_fee TEXT,
+    opening_hours TEXT,
+    quote TEXT,
+    reviews JSONB,
+    type TEXT,
+    phone TEXT,
+    souvenirs BOOLEAN,
+    uid UUID,
+    created_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ,
+    is_active BOOLEAN,
+    price_range JSONB,
+    categories JSONB,
+    wifi JSONB,
+    parking JSONB,
+    accessibility JSONB,
+    audience_range JSONB,
+    tags JSONB,
+    images JSONB,
+    geog GEOGRAPHY,
+    distance_meters DOUBLE PRECISION,
+    distance_km DOUBLE PRECISION,
+    rating_numeric DOUBLE PRECISION
+) AS $$
+DECLARE
+    has_location BOOLEAN;
+BEGIN
+    has_location := (center_lat IS NOT NULL AND center_lon IS NOT NULL);
+    
+    RETURN QUERY
+    SELECT 
+        l.name,
+        l.slug,
+        l.description,
+        l.latitude,
+        l.longitude,
+        l.address,
+        l.city,
+        l.country,
+        l.petfriendly,
+        l.family_friendly,
+        l.open_24hrs,
+        l.free_entry,
+        COALESCE(l.rating, 0),
+        l.url,
+        l.admission_fee,
+        l.opening_hours,
+        l.quote,
+        l.reviews,
+        l.type,
+        l.phone,
+        l.souvenirs,
+        l.uid,
+        l.created_at,
+        l.updated_at,
+        l.is_active,
+        l.price_range,
+        l.categories,
+        l.wifi,
+        l.parking,
+        l.accessibility,
+        l.audience_range,
+        l.tags,
+        l.images,
+        l.geog,
+        -- Distance calculations
+        CASE 
+            WHEN has_location THEN ST_Distance(l.geog, ST_MakePoint(center_lon, center_lat)::geography)
+            ELSE NULL
+        END as distance_meters,
+        CASE 
+            WHEN has_location THEN ROUND((ST_Distance(l.geog, ST_MakePoint(center_lon, center_lat)::geography) / 1000)::numeric, 2)
+            ELSE NULL
+        END as distance_km,
+        -- Rating numeric - just return 0 for now
+        0::DOUBLE PRECISION as rating_numeric
+    FROM locations l
+    WHERE 
+        l.type = 'attraction'
+        AND l.is_active = true
+        
+        -- Distance filter
+        AND (NOT has_location OR (
+            l.geog IS NOT NULL 
+            AND ST_DWithin(l.geog, ST_MakePoint(center_lon, center_lat)::geography, COALESCE(radius_meters, 50000))
+        ))
+        
+        -- Text search
+        AND (search_text IS NULL OR search_text = '' OR l.name ILIKE '%' || search_text || '%')
+        
+        -- Location filters
+        AND (filter_city IS NULL OR l.city = filter_city)
+        AND (filter_country IS NULL OR l.country = filter_country)
+        
+        -- Boolean filters
+        AND (filter_petfriendly IS NULL OR l.petfriendly = filter_petfriendly)
+        AND (filter_family_friendly IS NULL OR l.family_friendly = filter_family_friendly)
+        AND (filter_open_24hrs IS NULL OR l.open_24hrs = filter_open_24hrs)
+        AND (filter_free_entry IS NULL OR l.free_entry = filter_free_entry)
+        AND (filter_souvenirs IS NULL OR l.souvenirs = filter_souvenirs)
+        
+        -- NO RATING FILTERS
+    
+    ORDER BY 
+        CASE 
+            WHEN sort_by = 'distance' AND has_location THEN 
+                ST_Distance(l.geog, ST_MakePoint(center_lon, center_lat)::geography)
+            WHEN sort_by = 'name' THEN 0
+            ELSE 
+                CASE 
+                    WHEN has_location THEN ST_Distance(l.geog, ST_MakePoint(center_lon, center_lat)::geography)
+                    ELSE 0
+                END
+        END,
+        l.name
+    
+    LIMIT max_results
+    OFFSET offset_results;
+    
+END;
+$$ LANGUAGE plpgsql;
+
+-- Grant permissions
+GRANT EXECUTE ON FUNCTION search_attractions_v2 TO anon, authenticated;

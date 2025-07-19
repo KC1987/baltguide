@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState, useContext } from "react";
-import { AuthContext } from "@/contexts/AuthContext";
 import { Link } from "@heroui/link";
 
+import { AuthContext } from "@/contexts/AuthContext";
 import { createClient } from "@/config/supabase/client";
 import { useTranslation } from "@/lib/i18n";
 import TranslationProvider from "@/components/TranslationProvider";
@@ -18,9 +18,7 @@ function HomePage() {
 
   useEffect(() => {
     async function getLocations() {
-
       // console.log((await supabase.auth.getSession()).data)
-
 
       const { data, error } = await supabase.from("locations").select("*");
       // .eq("country", "Latvia")
@@ -41,7 +39,9 @@ function HomePage() {
 
   return (
     <div>
-      <button onClick={() => console.log(user, session)} >Log User Context</button>
+      <button onClick={() => console.log(user, session)}>
+        Log User Context
+      </button>
       <h1>{t("locations.title")}</h1>
       <p>{t("locations.description")}</p>
       <Link href="/map">{t("navigation.map")}</Link>

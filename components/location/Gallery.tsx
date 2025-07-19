@@ -12,15 +12,15 @@ export default function Gallery({ images }: any) {
   return (
     <div className="w-full h-full flex gap-2">
       {/* Thumbnails  */}
-      <ScrollShadow className="w-96" orientation="vertical" hideScrollBar >
+      <ScrollShadow hideScrollBar className="w-96" orientation="vertical">
         <div className="flex flex-wrap justify-start content-start gap-2">
           {images?.map((img: any, i: any) => (
             <Image
               key={i}
               className="rounded-sm hover:cursor-pointer shadow-md object-cover overflow-hidden"
+              height={80}
               src={`${images[i].url}`}
               width={140}
-              height={80}
               onClick={() => setActiveImg(i)}
             />
           ))}
@@ -39,11 +39,11 @@ export default function Gallery({ images }: any) {
       <Modal
         backdrop="opaque"
         className="bg-opacity-0 border-none shadow-none"
-        size="5xl"
         isOpen={isOpen}
+        size="5xl"
         onOpenChange={onOpenChange}
       >
-        <ModalContent className="w-full h-full" >
+        <ModalContent className="w-full h-full">
           {(onClose) => (
             <div>
               <div className="flex flex-col items-center">
@@ -54,15 +54,15 @@ export default function Gallery({ images }: any) {
                 </div>
                 <p className="text-white">{images[activeImg].caption}</p>
               </div>
-              <ScrollShadow className="" orientation="horizontal" >
-                <div className="flex flex-row gap-2" >
+              <ScrollShadow className="" orientation="horizontal">
+                <div className="flex flex-row gap-2">
                   {images?.map((img: any, i: any) => (
                     <Image
                       key={i}
                       className="rounded-sm hover:cursor-pointer shadow-md object-cover overflow-hidden"
+                      height={80}
                       src={`${images[i].url}`}
                       width={140}
-                      height={80}
                       onClick={() => setActiveImg(i)}
                     />
                   ))}
@@ -78,4 +78,3 @@ export default function Gallery({ images }: any) {
     </div>
   );
 }
-

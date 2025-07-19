@@ -85,24 +85,27 @@ function getNestedProperty(obj: any, path: string): string {
 }
 
 // Simple locale state management for App Router
-let currentLocale: Locale = 'en';
+let currentLocale: Locale = "en";
 
 export function setCurrentLocale(locale: Locale) {
   currentLocale = locale;
   // Store in localStorage for persistence
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('preferred-locale', locale);
+  if (typeof window !== "undefined") {
+    localStorage.setItem("preferred-locale", locale);
   }
 }
 
 export function getCurrentLocale(): Locale {
-  if (typeof window !== 'undefined') {
-    const stored = localStorage.getItem('preferred-locale') as Locale;
+  if (typeof window !== "undefined") {
+    const stored = localStorage.getItem("preferred-locale") as Locale;
+
     if (stored && locales.includes(stored)) {
       currentLocale = stored;
+
       return stored;
     }
   }
+
   return currentLocale;
 }
 
@@ -113,11 +116,13 @@ export function useTranslation() {
   useEffect(() => {
     const handleStorageChange = () => {
       const newLocale = getCurrentLocale();
+
       setLocale(newLocale);
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const t = useCallback(

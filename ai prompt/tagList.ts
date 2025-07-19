@@ -19,7 +19,7 @@ export const taglist = {
     "dune-trail",
     "wildflower-meadow",
     "river-walk",
-    "wilderness-area"
+    "wilderness-area",
   ],
   "culture-history": [
     "castle",
@@ -41,7 +41,7 @@ export const taglist = {
     "monastery",
     "historic-cemetery",
     "wooden-architecture",
-    "cultural-center"
+    "cultural-center",
   ],
   "amusement-theme-parks": [
     "waterpark",
@@ -63,7 +63,7 @@ export const taglist = {
     "bumper-cars",
     "laser-tag",
     "bowling-alley",
-    "family-entertainment"
+    "family-entertainment",
   ],
   "arts-live-entertainment": [
     "theater",
@@ -85,7 +85,7 @@ export const taglist = {
     "chamber-music",
     "traditional-dance",
     "sculpture-park",
-    "open-air-concert"
+    "open-air-concert",
   ],
   "nightlife-bars": [
     "nightclub",
@@ -107,7 +107,7 @@ export const taglist = {
     "beer-garden",
     "late-night-cafe",
     "disco",
-    "lounge-bar"
+    "lounge-bar",
   ],
   "sports-recreation": [
     "golf-course",
@@ -129,7 +129,7 @@ export const taglist = {
     "fishing-spot",
     "beach-volleyball",
     "disc-golf",
-    "outdoor-gym"
+    "outdoor-gym",
   ],
   "shopping-markets": [
     "shopping-mall",
@@ -151,7 +151,7 @@ export const taglist = {
     "gift-shop",
     "specialty-store",
     "handicraft-center",
-    "design-store"
+    "design-store",
   ],
   "restaurants-dining": [
     "fine-dining",
@@ -173,7 +173,7 @@ export const taglist = {
     "vegetarian-restaurant",
     "brewery-restaurant",
     "ethnic-cuisine",
-    "riverside-dining"
+    "riverside-dining",
   ],
   "unique-niche": [
     "ice-bar",
@@ -195,7 +195,7 @@ export const taglist = {
     "underground-tunnel",
     "observation-deck",
     "unique-architecture",
-    "secret-location"
+    "secret-location",
   ],
   "educational-interactive": [
     "science-center",
@@ -217,7 +217,7 @@ export const taglist = {
     "hands-on-exhibit",
     "discovery-center",
     "learning-trail",
-    "interactive-display"
+    "interactive-display",
   ],
   "wellness-relaxation": [
     "spa",
@@ -239,7 +239,7 @@ export const taglist = {
     "healing-garden",
     "therapeutic-pool",
     "wellness-resort",
-    "detox-center"
+    "detox-center",
   ],
   "transport-tours": [
     "boat-tour",
@@ -261,6 +261,6 @@ export const taglist = {
     "nature-tour",
     "city-tour",
     "coastal-tour",
-    "cultural-tour"
+    "cultural-tour",
   ],
 };

@@ -29,33 +29,46 @@ INSERT INTO locations (
     audience_range,
     tags
 ) VALUES (
-    'Aglonas bazilika',
-    'aglonas-bazilika',
-    'The Aglona Roman Catholic Basilica of the Assumption of the Blessed Virgin Mary is one of the most important Catholic spiritual centers in Latvia and the only basilica with "Basilica Minoris" status in the country. Built between 1768-1780 in late Baroque style with Italian influences, it features two magnificent 60-meter-high towers and richly decorated Rococo interior with groin vaults, arches, and ornate columns. The basilica houses the miraculous 17th century icon "Our Miraculous Lady of Aglona", believed to have healing powers and only unveiled during religious celebrations. Every year on August 15th, hundreds of thousands of pilgrims from Latvia, Lithuania, Poland and beyond gather to celebrate the Assumption of the Virgin Mary. Pope John Paul II visited in 1993, and the site was declared a Sacred Site of National Importance by Latvian Parliament in 1995. The complex includes beautiful prayer gardens, holy water springs, and a 10-meter Christ statue.',
-    56.125235,
-    27.013975,
-    'Cirīšu iela 8, Aglona, Aglonas novads, LV-5304, Latvia',
-    'Aglona',
+    'Freedom Monument',
+    'freedom-monument',
+    'The Freedom Monument (Latvian: Brīvības piemineklis) is a 42.7-meter-tall granite and copper monument in the heart of Riga, commemorating soldiers killed during the Latvian War of Independence (1918-1920). Unveiled on November 18, 1935, and funded entirely by public donations, this iconic landmark has become the most important symbol of Latvia''s freedom, independence, and sovereignty. Designed by sculptor Kārlis Zāle with the project "Mirdzi kā zvaigzne!" (Shine Like a Star), the monument features 56 sculptures arranged in 13 groups across four levels, depicting Latvian culture, history, and values. At its pinnacle stands a 9-meter copper figure of Liberty, affectionately known as "Milda," holding three gilded stars representing Latvia''s historical regions: Kurzeme, Vidzeme, and Latgale. The monument''s base bears the inscription "Tēvzemei un Brīvībai" (For Fatherland and Freedom). During Soviet occupation, gatherings at the monument were strictly forbidden, though it remarkably survived demolition attempts. Today, it serves as the focal point for national celebrations, public gatherings, and official ceremonies, with an honor guard from the National Armed Forces standing watch and changing every hour from 9am to 6pm.',
+    56.9514,
+    24.1133,
+    'Brīvības bulvāris, Riga, Latvia, LV-1050',
+    'Riga',
     'Latvia',
-    false,
     true,
-    false,
+    true,
+    true,
     true,
     4.5,
-    'https://www.aglonasbazilika.lv/',
-    'Entry to the basilica is free. Guided tours available for under €2 in Latvian, Russian, German, and English languages. Free parking available outside the gates.',
-    'Open daily for visits and prayer. Mass times: Monday-Saturday at 7am, 12pm (noon), and 7pm; Sunday at 10am, 12pm (noon), and 7pm. The basilica is particularly busy during August pilgrimage season, especially on August 15th (Assumption Day). Visitors should check the official website for special event schedules and any temporary closures.',
-    'The only basilica in Latvia and the spiritual heart of the Catholic faith in the Baltic region.',
-    '{}',
+    'https://www.liveriga.com/en/3231-freedom-monument',
+    'Free admission - no entry fee required as the monument is located in an open public plaza',
+    'The monument is accessible 24/7 as it is located in a public pedestrian area. Honor guard is present daily from 9:00 AM to 6:00 PM, with changing of the guard ceremony every hour on the hour. The guard may not be present during severe weather conditions.',
+    'A towering symbol of Latvia''s enduring spirit of independence and national unity.',
+    ARRAY[]::jsonb[],
     'attraction',
-    '{"+371 29188740", "+371 65381109"}',
-    true,
-    '{"free"}',
-    ARRAY['{"url": "https://commons.wikimedia.org/wiki/File:Aglona_Basilica.jpg", "caption": "Aglona Basilica exterior view showing the twin baroque towers"}'::jsonb, '{"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/L%C4%ABvu_Akvaparks_%282021%29.jpg/1280px-L%C4%ABvu_Akvaparks_%282021%29.jpg", "caption": "Interior view of the basilica showing ornate baroque decoration"}'::jsonb, '{"url": "https://www.tripadvisor.com/LocationPhotoDirectLink-g2468084-d312392-i107658033-Aglona_Basilica-Aglona_Latgale_Region.html", "caption": "The miraculous icon of Our Lady of Aglona"}'::jsonb],
-    '{"culture-history", "wellness-relaxation"}',
-    '{"none"}',
-    '{"free"}',
-    '{"wheelchair-accessible"}',
-    '{"children", "teenagers", "adults", "seniors", "all-ages", "family-friendly"}',
-    '{"basilica", "catholic", "church", "pilgrimage", "baroque", "religious-site", "spiritual-center", "miraculous-icon", "holy-spring", "pope-visit", "national-importance", "assumption-mary", "dominican", "healing-powers", "prayer-garden", "rococo-interior", "christ-statue", "sacred-site", "minor-basilica"}'
+    ARRAY[]::jsonb[],
+    false,
+    ARRAY['["free"]'::jsonb],
+    ARRAY['[
+        {
+            "url": "https://pixabay.com/photos/freedom-monument-riga-latvia-2228013/",
+            "caption": "The Freedom Monument standing majestically in central Riga with its iconic copper Liberty figure holding three golden stars"
+        },
+        {
+            "url": "https://unsplash.com/photos/freedom-monument-riga",
+            "caption": "Honor guards standing at attention at the base of the Freedom Monument during the daily guard ceremony"
+        },
+        {
+            "url": "https://www.pexels.com/photo/freedom-monument-riga-latvia",
+            "caption": "Close-up view of the sculptural reliefs depicting Latvian culture and history at the monument''s base"
+        }
+    ]'::jsonb],
+    ARRAY['["culture-history", "unique-niche"]'::jsonb],
+    ARRAY['["none"]'::jsonb],
+    ARRAY['["nearby"]'::jsonb],
+    ARRAY['["wheelchair-accessible"]'::jsonb],
+    ARRAY['["children", "teenagers", "adults", "seniors", "family-friendly"]'::jsonb],
+    ARRAY['["monument", "historic-site", "war-memorial", "observation-deck"]'::jsonb]
 );

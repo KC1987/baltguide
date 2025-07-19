@@ -1,25 +1,27 @@
 "use client";
 
 import { useState } from "react";
-
-
 import { Button } from "@heroui/button";
-import { Input, Slider, CheckboxGroup, Checkbox, Divider, Chip } from "@heroui/react";
+import { Input, Slider, CheckboxGroup, Checkbox, Divider } from "@heroui/react";
 
+export default function FilterMain({
+  getAttractions,
+  filter,
+  setFilter,
+  userGeolocation,
+  setUserGeolocation,
+  selectedDistance,
+  setSelectedDistance,
+}: any) {
+  const [advancedMenuOpen, setAdvancedMenuOpen] = useState(false);
 
-import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
-import { taglist } from "@/res/tagList";
-
-export default function FilterMain({ getAttractions, filter, setFilter, geolocation, setGeolocation }: any) {
-  const [ advancedMenuOpen, setAdvancedMenuOpen ] = useState(false);
-  
   function handleSearch() {
     getAttractions();
-  };
+  }
 
-  function handleSelectionChange(name:any, selection:any) {
-    setFilter({...filter, [name]: selection})
-  };
+  function handleSelectionChange(name: any, selection: any) {
+    setFilter({ ...filter, [name]: selection });
+  }
 
   // function handleTagSelection(tags:any) {
   //   //Remove doublicates
@@ -29,105 +31,197 @@ export default function FilterMain({ getAttractions, filter, setFilter, geolocat
   //   setFilter({...filter, tags: [...filter.tags, ...filteredTags]});
   // };
 
-  // function getGeolocation() {
-  //   navigator.geolocation.getCurrentPosition( pos => {
-  //     setGeolocation({lat: pos.coords.latitude, lon: pos.coords.longitude})
-  //     console.log(pos.coords.latitude);
-  //     console.log(pos.coords.longitude);
-  //   })
-  // };
+  function getUserGeolocation() {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      setFilter({
+        ...filter,
+        distanceSearch: {
+          ...filter.distanceSearch,
+          userLat: pos.coords.latitude,
+          userLon: pos.coords.longitude,
+        },
+      });
+      console.log(pos.coords.latitude);
+      console.log(pos.coords.longitude);
+    });
+  }
 
   return (
     <div className=" bg-sky-100 dark:bg-sky-800 w-full min-h-16 p-2 gap-2">
       <div className="flex">
-        <Input type="text" placeholder="Search..." value={filter.searchText} onChange={(e) => setFilter({...filter, searchText: e.target.value})} />
+        <Input
+          placeholder="Search..."
+          type="text"
+          value={filter.searchText}
+          onChange={(e) => setFilter({ ...filter, searchText: e.target.value })}
+        />
       </div>
-        <div>
-          <Checkbox size="sm" onValueChange={(isSelected:boolean) => handleSelectionChange("family_friendly", isSelected)} >Family Friendly</Checkbox>
-          <Checkbox size="sm" onValueChange={(isSelected:boolean) => handleSelectionChange("open_24hrs", isSelected)} >Open 24hrs</Checkbox>
-          <Checkbox size="sm" onValueChange={(isSelected:boolean) => handleSelectionChange("free_entry", isSelected)} >Free Entry</Checkbox>
-          <Checkbox size="sm" onValueChange={(isSelected:boolean) => handleSelectionChange("souvenirs", isSelected)} >Souvenirs</Checkbox>
-          <Checkbox size="sm" onValueChange={(isSelected:boolean) => handleSelectionChange("petfriendly", isSelected)} >Petfriendly</Checkbox>
-        </div>
-        {/* <div>
-          <Slider
-            className="max-w-md"
-            color="primary"
-            defaultValue={0.2}
-            label="Distance"
-            maxValue={300}
-            minValue={0}
-            showSteps={true}
-            size="sm"
-            step={30}
-          />
-        </div>
-        <Button onPress={getGeolocation} color="secondary" >Get Geolocation</Button> */}
-        <Button className="" color="warning" onPress={handleSearch}>Search</Button>
-        <div>{JSON.stringify(filter)}</div>
-        <Button size="sm" color="primary" onPress={() => setAdvancedMenuOpen(!advancedMenuOpen)} >Advanced Menu</Button>
-      
+      <div>
+        <Checkbox
+          size="sm"
+          onValueChange={(isSelected: boolean) =>
+            handleSelectionChange("family_friendly", isSelected)
+          }
+        >
+          Family Friendly
+        </Checkbox>
+        <Checkbox
+          size="sm"
+          onValueChange={(isSelected: boolean) =>
+            handleSelectionChange("open_24hrs", isSelected)
+          }
+        >
+          Open 24hrs
+        </Checkbox>
+        <Checkbox
+          size="sm"
+          onValueChange={(isSelected: boolean) =>
+            handleSelectionChange("free_entry", isSelected)
+          }
+        >
+          Free Entry
+        </Checkbox>
+        <Checkbox
+          size="sm"
+          onValueChange={(isSelected: boolean) =>
+            handleSelectionChange("souvenirs", isSelected)
+          }
+        >
+          Souvenirs
+        </Checkbox>
+        <Checkbox
+          size="sm"
+          onValueChange={(isSelected: boolean) =>
+            handleSelectionChange("petfriendly", isSelected)
+          }
+        >
+          Petfriendly
+        </Checkbox>
+      </div>
+      <div className="flex gap-2 items-center">
+        <Slider
+          className="max-w-md"
+          color="primary"
+          defaultValue={0}
+          label="Distance (km)"
+          maxValue={300}
+          minValue={0}
+          showSteps={true}
+          size="sm"
+          step={30}
+          value={filter.distanceSearch?.radius || 0}
+          onChange={(e) =>
+            setFilter({
+              ...filter,
+              distanceSearch: { ...filter.distanceSearch, radius: e },
+            })
+          }
+        />
+        <Button color="secondary" size="sm" onPress={getUserGeolocation}>
+          Get Geolocation
+        </Button>
+        <p className="text-xs">
+          Lat: {filter.distanceSearch?.userLat || "N/A"}
+        </p>
+        <p className="text-xs">
+          Lon: {filter.distanceSearch?.userLon || "N/A"}
+        </p>
+      </div>
+
+      <Button className="" color="warning" onPress={handleSearch}>
+        Search
+      </Button>
+      <div>{JSON.stringify(filter)}</div>
+      <Button
+        color="primary"
+        size="sm"
+        onPress={() => setAdvancedMenuOpen(!advancedMenuOpen)}
+      >
+        Advanced Menu
+      </Button>
+
       {/* Animated Advanced Menu */}
-      <div 
+      <div
         className={`overflow-hidden container transition-all duration-300 ease-in-out ${
-          advancedMenuOpen ? 'h-[320] opacity-100' : 'h-0 opacity-0'
+          advancedMenuOpen ? "h-[320] opacity-100" : "h-0 opacity-0"
         }`}
       >
-
         {/* Categories */}
         <div className="">
           <span>
-            <h1 className="text-lg font-semibold my-2" >Categories</h1>
+            <h1 className="text-lg font-semibold my-2">Categories</h1>
             {/* <Square3Stack3DIcon /> */}
           </span>
           <CheckboxGroup
-            name="categories"
-            value={filter.categories}
-            onValueChange={(selection) => handleSelectionChange("categories", selection)}
-            orientation="horizontal"
             className=""
+            name="categories"
+            orientation="horizontal"
             size="sm"
+            value={filter.categories}
+            onValueChange={(selection) =>
+              handleSelectionChange("categories", selection)
+            }
           >
             <table>
               <tbody>
                 <tr>
                   <td>
-                    <Checkbox value="culture-history" >Culture & History</Checkbox>
+                    <Checkbox value="culture-history">
+                      Culture & History
+                    </Checkbox>
                   </td>
                   <td>
-                    <Checkbox value="parks-nature" >Parks & Nature</Checkbox>
+                    <Checkbox value="parks-nature">Parks & Nature</Checkbox>
                   </td>
                   <td>
-                    <Checkbox value="amusement-theme-parks" >Amusement & Theme Parks</Checkbox>
+                    <Checkbox value="amusement-theme-parks">
+                      Amusement & Theme Parks
+                    </Checkbox>
                   </td>
                   <td>
-                    <Checkbox value="arts-live-entertainment" >Arts & Live Entertainment</Checkbox>
+                    <Checkbox value="arts-live-entertainment">
+                      Arts & Live Entertainment
+                    </Checkbox>
                   </td>
                   <td>
-                    <Checkbox value="nightlife-bars" >Nightlife & Bars</Checkbox>
+                    <Checkbox value="nightlife-bars">Nightlife & Bars</Checkbox>
                   </td>
                   <td>
-                   <Checkbox value="sports-recreation" >Sports & Recreation</Checkbox>
+                    <Checkbox value="sports-recreation">
+                      Sports & Recreation
+                    </Checkbox>
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <Checkbox value="shopping-markets" >Shopping & Markets</Checkbox>
+                    <Checkbox value="shopping-markets">
+                      Shopping & Markets
+                    </Checkbox>
                   </td>
                   <td>
-                    <Checkbox value="restaurants-dining" >Restaurants & Dining</Checkbox>
+                    <Checkbox value="restaurants-dining">
+                      Restaurants & Dining
+                    </Checkbox>
                   </td>
                   <td>
-                    <Checkbox value="educational-interactive" >Educational & Interactive</Checkbox>
+                    <Checkbox value="educational-interactive">
+                      Educational & Interactive
+                    </Checkbox>
                   </td>
                   <td>
-                   <Checkbox value="wellness-relaxation" >Wellness & Relaxation</Checkbox>
+                    <Checkbox value="wellness-relaxation">
+                      Wellness & Relaxation
+                    </Checkbox>
                   </td>
                   <td>
-                    <Checkbox value="transport-tours" >Transport & Tours</Checkbox>
+                    <Checkbox value="transport-tours">
+                      Transport & Tours
+                    </Checkbox>
                   </td>
                   <td>
-                    <Checkbox value="unique-niche" >Unique & Niche Attractions</Checkbox>
+                    <Checkbox value="unique-niche">
+                      Unique & Niche Attractions
+                    </Checkbox>
                   </td>
                 </tr>
               </tbody>
@@ -149,7 +243,7 @@ export default function FilterMain({ getAttractions, filter, setFilter, geolocat
         {/* Price Range */}
         <div className="">
           <span>
-            <h1 className="text-lg font-semibold my-2" >Price Range</h1>
+            <h1 className="text-lg font-semibold my-2">Price Range</h1>
             {/* <Square3Stack3DIcon /> */}
           </span>
           <CheckboxGroup
@@ -160,20 +254,19 @@ export default function FilterMain({ getAttractions, filter, setFilter, geolocat
             // className="max-h-8"
             size="sm"
           >
-            <Checkbox value="free" >Free</Checkbox>
-            <Checkbox value="budget" >Budget (0 - 10 Eur)</Checkbox>
-            <Checkbox value="moderate" >Moderate (10 - 25 Eur) </Checkbox>
-            <Checkbox value="expensive" >Expensive (25 - 50 Eur)</Checkbox>
-            <Checkbox value="luxury" >Luxury (50+ Eur)</Checkbox>
+            <Checkbox value="free">Free</Checkbox>
+            <Checkbox value="budget">Budget (0 - 10 Eur)</Checkbox>
+            <Checkbox value="moderate">Moderate (10 - 25 Eur) </Checkbox>
+            <Checkbox value="expensive">Expensive (25 - 50 Eur)</Checkbox>
+            <Checkbox value="luxury">Luxury (50+ Eur)</Checkbox>
           </CheckboxGroup>
         </div>
         <Divider className="my-1" />
 
-
         {/* Audience Range */}
         <div className="">
           <span>
-            <h1 className="text-lg font-semibold my-2" >Audience Range</h1>
+            <h1 className="text-lg font-semibold my-2">Audience Range</h1>
             {/* <Square3Stack3DIcon /> */}
           </span>
           <CheckboxGroup
@@ -184,12 +277,12 @@ export default function FilterMain({ getAttractions, filter, setFilter, geolocat
             // className="max-h-8"
             size="sm"
           >
-            <Checkbox value="infants" >Infants (0-2 years)</Checkbox>
-            <Checkbox value="toddlers" >Toddlers (2-5 years)</Checkbox>
-            <Checkbox value="children" >Children (6-12 years)</Checkbox>
-            <Checkbox value="teenagers" >Teenagers (13-17 years)</Checkbox>
-            <Checkbox value="adults" >Adults (18+ years)</Checkbox>
-            <Checkbox value="seniors" >Seniors (65+ years)</Checkbox>
+            <Checkbox value="infants">Infants (0-2 years)</Checkbox>
+            <Checkbox value="toddlers">Toddlers (2-5 years)</Checkbox>
+            <Checkbox value="children">Children (6-12 years)</Checkbox>
+            <Checkbox value="teenagers">Teenagers (13-17 years)</Checkbox>
+            <Checkbox value="adults">Adults (18+ years)</Checkbox>
+            <Checkbox value="seniors">Seniors (65+ years)</Checkbox>
           </CheckboxGroup>
         </div>
         <Divider className="my-1" />
@@ -198,7 +291,7 @@ export default function FilterMain({ getAttractions, filter, setFilter, geolocat
           {/* Parking */}
           <div className="">
             <span>
-              <h1 className="text-lg font-semibold my-2" >Parking</h1>
+              <h1 className="text-lg font-semibold my-2">Parking</h1>
               {/* <Square3Stack3DIcon /> */}
             </span>
             <CheckboxGroup
@@ -209,9 +302,9 @@ export default function FilterMain({ getAttractions, filter, setFilter, geolocat
               // className="max-h-8"
               size="sm"
             >
-              <Checkbox value="free" >Free</Checkbox>
-              <Checkbox value="paid" >Paid</Checkbox>
-              <Checkbox value="nearby" >Nearby</Checkbox>
+              <Checkbox value="free">Free</Checkbox>
+              <Checkbox value="paid">Paid</Checkbox>
+              <Checkbox value="nearby">Nearby</Checkbox>
             </CheckboxGroup>
           </div>
           {/* <Divider className="my-1" /> */}
@@ -219,7 +312,7 @@ export default function FilterMain({ getAttractions, filter, setFilter, geolocat
           {/* WiFi */}
           <div className="">
             <span>
-              <h1 className="text-lg font-semibold my-2" >WiFi</h1>
+              <h1 className="text-lg font-semibold my-2">WiFi</h1>
               {/* <Square3Stack3DIcon /> */}
             </span>
             <CheckboxGroup
@@ -230,17 +323,17 @@ export default function FilterMain({ getAttractions, filter, setFilter, geolocat
               // className="max-h-8"
               size="sm"
             >
-              <Checkbox value="free" >Free</Checkbox>
-              <Checkbox value="free-limited" >Free Limited</Checkbox>
-              <Checkbox value="paid" >Paid</Checkbox>
-              <Checkbox value="none" >None</Checkbox>
+              <Checkbox value="free">Free</Checkbox>
+              <Checkbox value="free-limited">Free Limited</Checkbox>
+              <Checkbox value="paid">Paid</Checkbox>
+              <Checkbox value="none">None</Checkbox>
             </CheckboxGroup>
           </div>
 
           {/* Accessibility */}
           <div className="">
             <span>
-              <h1 className="text-lg font-semibold my-2" >Accessibility</h1>
+              <h1 className="text-lg font-semibold my-2">Accessibility</h1>
               {/* <Square3Stack3DIcon /> */}
             </span>
             <CheckboxGroup
@@ -251,10 +344,14 @@ export default function FilterMain({ getAttractions, filter, setFilter, geolocat
               // className="max-h-8"
               size="sm"
             >
-              <Checkbox value="wheelchair-accessible" >Wheelchair Accessible</Checkbox>
-              <Checkbox value="accessible-restrooms" >Accessible Restrooms</Checkbox>
-              <Checkbox value="audio-tours" >Audio Tours</Checkbox>
-              <Checkbox value="braille-signage" >Braille Signage</Checkbox>
+              <Checkbox value="wheelchair-accessible">
+                Wheelchair Accessible
+              </Checkbox>
+              <Checkbox value="accessible-restrooms">
+                Accessible Restrooms
+              </Checkbox>
+              <Checkbox value="audio-tours">Audio Tours</Checkbox>
+              <Checkbox value="braille-signage">Braille Signage</Checkbox>
             </CheckboxGroup>
           </div>
           {/* <Divider className="my-1" /> */}

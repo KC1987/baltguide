@@ -1,0 +1,311 @@
+# Complete Locations Table Schema
+
+## Table Overview
+The `locations` table stores information about tourist attractions and points of interest in Baltic countries (Latvia, Lithuania, Estonia).
+
+## Field Definitions from location_schema.json
+
+```json
+{
+  "name": {
+    "value": "string",
+    "type": "text"
+  },
+  "slug": {
+    "value": "string",
+    "type": "text"
+  },
+  "description": {
+    "value": "string",
+    "type": "text"
+  },
+  "latitude": {
+    "value": "number",
+    "type": "text"
+  },
+  "longitude": {
+    "value": "number",
+    "type": "text"
+  },
+  "address": {
+    "value": "string",
+    "type": "text"
+  },
+  "city": {
+    "value": "string",
+    "type": "text"
+  },
+  "country": {
+    "value": "string",
+    "type": "text",
+    "options": ["Latvia", "Lithuania", "Estonia"],
+    "selectionMode": "single"
+  },
+  "petfriendly": {
+    "value": "boolean",
+    "type": "boolean"
+  },
+  "family_friendly": {
+    "value": "boolean",
+    "type": "boolean"
+  },
+  "open_24hrs": {
+    "value": "boolean",
+    "type": "boolean"
+  },
+  "free_entry": {
+    "value": "boolean",
+    "type": "boolean"
+  },
+  "rating": {
+    "value": "number",
+    "type": "text"
+  },
+  "url": {
+    "value": "string",
+    "type": "text"
+  },
+  "admission_fee": {
+    "value": "string",
+    "type": "text"
+  },
+  "opening_hours": {
+    "value": "string",
+    "type": "text"
+  },
+  "quote": {
+    "value": "string",
+    "type": "text"
+  },
+  "reviews": {
+    "value": [],
+    "type": "jsonb"
+  },
+  "type": {
+    "value": "attraction",
+    "type": "text"
+  },
+  "phone": {
+    "value": "string",
+    "type": "text"
+  },
+  "souvenirs": {
+    "value": "boolean",
+    "type": "boolean"
+  },
+  "price_range": {
+    "value": [],
+    "type": "jsonb",
+    "options": ["free", "budget", "moderate", "expensive", "luxury"],
+    "selectionMode": "multiple"
+  },
+  "images": {
+    "value": [],
+    "type": "jsonb"
+  },
+  "categories": {
+    "value": [],
+    "type": "jsonb",
+    "options": ["culture-history", "parks-nature", "amusement-theme-parks", "arts-live-entertainment", "nightlife-bars", "sports-recreation", "shopping-markets", "restaurants-dining", "unique-niche", "educational-interactive", "wellness-relaxation", "transport-tours"],
+    "selectionMode": "multiple"
+  },
+  "wifi": {
+    "value": [],
+    "type": "jsonb",
+    "options": ["free", "free-limited", "paid", "none"],
+    "selectionMode": "multiple"
+  },
+  "parking": {
+    "value": [],
+    "type": "jsonb",
+    "options": ["free", "paid", "nearby"],
+    "selectionMode": "multiple"
+  },
+  "accessibility": {
+    "value": [],
+    "type": "jsonb",
+    "options": ["wheelchair-accessible", "accessible-restrooms", "audio-tours", "braille-signage"],
+    "selectionMode": "multiple"
+  },
+  "audience_range": {
+    "value": [],
+    "type": "jsonb",
+    "options": ["infants", "toddlers", "children", "teenagers", "adults", "seniors", "family-friendly"],
+    "selectionMode": "multiple"
+  },
+  "tags": {
+    "value": [],
+    "type": "jsonb"
+  }
+}
+```
+
+## PostgreSQL Implementation Details
+
+### Data Type Mapping
+| JSON Schema Type | PostgreSQL Type | SQL Format |
+|-----------------|-----------------|------------|
+| text | TEXT | Plain string value |
+| boolean | BOOLEAN | true/false |
+| number (coordinates) | NUMERIC | Decimal number |
+| number (rating) | NUMERIC | 1-5 with 0.5 steps |
+| jsonb | JSONB[] | PostgreSQL JSONB array |
+
+### JSONB Array Columns - CRITICAL FORMAT
+The following columns are implemented as PostgreSQL JSONB arrays (`jsonb[]`):
+- `phone`
+- `reviews` 
+- `price_range`
+- `images`
+- `categories`
+- `wifi`
+- `parking`
+- `accessibility`
+- `audience_range`
+- `tags`
+
+**Correct SQL Syntax for JSONB Arrays:**
+```sql
+-- Empty array
+ARRAY[]::jsonb[]
+
+-- Array with single JSON array
+ARRAY['["value1", "value2"]'::jsonb]
+
+-- Array with JSON objects (for images)
+ARRAY['[{"url": "...", "caption": "..."}]'::jsonb]
+```
+
+### Field-Specific Requirements
+
+#### Basic Information
+- **name**: Official location name
+- **slug**: URL-friendly lowercase-hyphenated version (e.g., "freedom-monument")
+- **description**: Comprehensive description with history and significance
+- **quote**: Concise one-sentence description (max ~100 characters)
+- **type**: Always "attraction"
+
+#### Location Data
+- **address**: Full address including street, city, country, and postal code
+- **city**: City name
+- **country**: Must be exactly one of: "Latvia", "Lithuania", "Estonia"
+- **latitude/longitude**: Precise GPS coordinates
+
+#### Visitor Information
+- **rating**: 1-5 scale with 0.5 increments based on reviews
+- **url**: Official website, government URL, or Wikipedia (empty string if none)
+- **admission_fee**: Detailed pricing or "Free admission" statement
+- **opening_hours**: Complete schedule including seasonal variations and special conditions
+
+#### Arrays with Specific Values
+- **phone**: 1-3 phone numbers as text strings
+- **price_range**: Select from: "free", "budget", "moderate", "expensive", "luxury"
+- **wifi**: Select from: "free", "free-limited", "paid", "none"
+- **parking**: Select from: "free", "paid", "nearby"
+- **accessibility**: Select from: "wheelchair-accessible", "accessible-restrooms", "audio-tours", "braille-signage"
+- **audience_range**: Select from: "infants", "toddlers", "children", "teenagers", "adults", "seniors", "family-friendly"
+
+#### Images Array Structure
+```json
+[
+  {
+    "url": "https://source.com/image.jpg",
+    "caption": "Descriptive caption for the image"
+  }
+]
+```
+**Allowed image sources**: Unsplash, Pixabay, Pexels, government websites (NOT Wikipedia)
+
+#### Categories
+Select from these main categories:
+- culture-history
+- parks-nature
+- amusement-theme-parks
+- arts-live-entertainment
+- nightlife-bars
+- sports-recreation
+- shopping-markets
+- restaurants-dining
+- unique-niche
+- educational-interactive
+- wellness-relaxation
+- transport-tours
+
+#### Tags - STRICT REQUIREMENTS
+Tags MUST be selected ONLY from the tagList.ts file. Each category has specific allowed tags:
+
+**Example from tagList.ts:**
+```typescript
+"culture-history": [
+  "castle", "museum", "historic-site", "monument", "cathedral", 
+  "ancient-ruins", "church", "temple", "heritage-village", 
+  "war-memorial", "palace", "medieval-town", "manor-house", 
+  "soviet-heritage", "old-town", "fortification", "monastery", 
+  "historic-cemetery", "wooden-architecture", "cultural-center"
+]
+```
+
+**Tag Rules:**
+1. Use ONLY tags that exist in tagList.ts
+2. Never create custom tags
+3. Maximum 3-5 tags per location
+4. Match tags to the location's categories
+5. If no perfect match exists, use fewer tags
+
+## Complete SQL Insert Template
+```sql
+INSERT INTO locations (
+    name, slug, description, latitude, longitude, address, city, country,
+    petfriendly, family_friendly, open_24hrs, free_entry, rating, url,
+    admission_fee, opening_hours, quote, reviews, type, phone, souvenirs,
+    price_range, images, categories, wifi, parking, accessibility,
+    audience_range, tags
+) VALUES (
+    'Location Name',
+    'location-name',
+    'Full comprehensive description of the location...',
+    56.9514,  -- latitude
+    24.1133,  -- longitude
+    'Street Address 1, City, Country, LV-1050',
+    'Riga',
+    'Latvia',  -- Must be: Latvia, Lithuania, or Estonia
+    true,      -- petfriendly
+    true,      -- family_friendly
+    false,     -- open_24hrs
+    true,      -- free_entry
+    4.5,       -- rating (1-5, 0.5 steps)
+    'https://official-website.com',  -- or empty string ''
+    'Free admission - no entry fee required',
+    'Daily 9:00 AM - 6:00 PM. Closed on national holidays.',
+    'A concise and compelling one-sentence description.',
+    ARRAY[]::jsonb[],  -- reviews (usually empty)
+    'attraction',
+    ARRAY[]::jsonb[],  -- phone (or ARRAY['["+371 12345678"]'::jsonb])
+    false,     -- souvenirs
+    ARRAY['["free"]'::jsonb],  -- price_range
+    ARRAY['[
+        {
+            "url": "https://unsplash.com/photos/example",
+            "caption": "Main view of the location"
+        },
+        {
+            "url": "https://pixabay.com/photos/example",
+            "caption": "Interior detail"
+        }
+    ]'::jsonb],  -- images
+    ARRAY['["culture-history", "unique-niche"]'::jsonb],  -- categories
+    ARRAY['["none"]'::jsonb],     -- wifi
+    ARRAY['["nearby"]'::jsonb],   -- parking
+    ARRAY['["wheelchair-accessible"]'::jsonb],  -- accessibility
+    ARRAY['["children", "teenagers", "adults", "seniors"]'::jsonb],  -- audience_range
+    ARRAY['["monument", "historic-site", "war-memorial"]'::jsonb]  -- tags from tagList.ts ONLY
+);
+```
+
+## Common Mistakes to Avoid
+1. Using `'[]'::jsonb` instead of `ARRAY[]::jsonb[]` for empty arrays
+2. Using `'["value"]'::jsonb` instead of `ARRAY['["value"]'::jsonb]`
+3. Creating custom tags not in tagList.ts
+4. Using Wikipedia as an image source
+5. Forgetting quotes around postal codes in addresses
+6. Not escaping single quotes in text (use '' for ')

@@ -1,8 +1,7 @@
 "use client";
 
 import { useContext } from "react";
-import { AuthContext } from "@/contexts/AuthContext";
-
+import { useRouter } from "next/navigation";
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
@@ -17,23 +16,26 @@ import { Kbd } from "@heroui/kbd";
 import { Link } from "@heroui/link";
 import { Input } from "@heroui/input";
 import { link as linkStyles } from "@heroui/theme";
-import { DividerProps, User } from "@heroui/react";
+import { User } from "@heroui/react";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownSection,
+  DropdownItem,
+} from "@heroui/dropdown";
 import NextLink from "next/link";
 import clsx from "clsx";
 import localFont from "next/font/local";
 
+import { AuthContext } from "@/contexts/AuthContext";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import LanguageSelector from "@/components/LanguageSelector";
 import TranslationProvider from "@/components/TranslationProvider";
 import { useTranslation } from "@/lib/i18n";
-import {
-  TwitterIcon,
-  GithubIcon,
-  DiscordIcon,
-  HeartFilledIcon,
-  SearchIcon,
-} from "@/components/icons";
+import { GithubIcon, SearchIcon } from "@/components/icons";
+import { createClient } from "@/config/supabase/client";
 
 const bauhaus = localFont({
   src: [
@@ -51,8 +53,21 @@ const bauhaus = localFont({
 });
 
 function NavbarMain() {
+  const supabase = createClient();
+  const router = useRouter();
   const { session, user, loading } = useContext(AuthContext);
   const { t } = useTranslation();
+
+  // Handle dropdown selection
+  const handleDropdownSelection = (key) => {
+    if (Array.from(key)[0] === "/") {
+      router.push(key);
+    }
+  };
+
+  function handleLogOut() {
+    supabase.auth.signOut();
+  }
 
   const searchInput = (
     <Input
@@ -111,7 +126,7 @@ function NavbarMain() {
         justify="end"
       >
         <NavbarItem className="hidden sm:flex gap-2">
-          <Link isExternal aria-label="Twitter" href={siteConfig.links.twitter}>
+          {/* <Link isExternal aria-label="Twitter" href={siteConfig.links.twitter}>
             <TwitterIcon className="text-default-500" />
           </Link>
           <Link isExternal aria-label="Discord" href={siteConfig.links.discord}>
@@ -119,53 +134,76 @@ function NavbarMain() {
           </Link>
           <Link isExternal aria-label="Github" href={siteConfig.links.github}>
             <GithubIcon className="text-default-500" />
-          </Link>
-          <ThemeSwitch />
+          </Link> */}
         </NavbarItem>
-        <NavbarItem className="hidden sm:flex">
+        <NavbarItem className="hidden sm:flex items-center gap-2">
           <LanguageSelector />
+          <Button size="sm" onPress={() => console.log(user, session)}>
+            Log Session
+          </Button>
         </NavbarItem>
         {/* <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem> */}
 
-
         {user ? (
           <NavbarItem className="hidden md:flex">
-            <Button
-              // isExternal
-              as={Link}
-              className="text-sm font-normal text-default-600 bg-default-100"
-              href="/account"
-              // startContent={<HeartFilledIcon className="text-danger" />}
-              variant="flat"
-            >
-              <User
-                avatarProps={{
-                  src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
-                }}
-                description="Product Designer"
-                name={user.user_metadata.username || "User"}
-              />
-            </Button>
+            <Dropdown>
+              <DropdownTrigger>
+                <User
+                  // avatarProps={{
+                  //   src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
+                  // }}
+                  className="hover:cursor-pointer"
+                  description="Product Designer"
+                  name={user.user_metadata.username || "User"}
+                />
+              </DropdownTrigger>
+              <DropdownMenu onAction={handleDropdownSelection}>
+                <DropdownSection showDivider>
+                  <DropdownItem key="theme">
+                    <ThemeSwitch />
+                  </DropdownItem>
+                </DropdownSection>
+                <DropdownItem
+                  key="/account/profile"
+                  className="min-w-[100] min-h-[40]"
+                >
+                  Profile
+                </DropdownItem>
+                <DropdownItem
+                  key="/account/favourites"
+                  className="min-w-[100] min-h-[40]"
+                >
+                  Favourites
+                </DropdownItem>
+                <DropdownItem
+                  key="/account/settings"
+                  showDivider
+                  className="min-w-[100] min-h-[40]"
+                >
+                  Settings
+                </DropdownItem>
+                <DropdownItem
+                  key="/login"
+                  className="text-red-400 min-w-[100] min-h-[40]"
+                  onClick={handleLogOut}
+                >
+                  Log Out
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
           </NavbarItem>
         ) : (
-        <div>
-          <NavbarItem className="hidden md:flex gap-2">
-            <Button href="/login" as={Link} color="warning" size="sm" >Login</Button>
-            <Button href="/register" as={Link} color="secondary" size="sm" >Register</Button>
-          </NavbarItem>
-        </div>
+          <div>
+            <NavbarItem className="hidden md:flex gap-2">
+              <Button as={Link} color="warning" href="/login" size="sm">
+                Login
+              </Button>
+              <Button as={Link} color="secondary" href="/register" size="sm">
+                Register
+              </Button>
+            </NavbarItem>
+          </div>
         )}
-        <NavbarItem>
-          <Button onPress={() => console.log(user, session)} size="sm" >Log Session</Button>
-        </NavbarItem>
-
-
-
-
-
-
-
-
       </NavbarContent>
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">

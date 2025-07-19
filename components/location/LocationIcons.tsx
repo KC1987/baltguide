@@ -1,10 +1,16 @@
+import {
+  ClockIcon,
+  UserGroupIcon,
+  BugAntIcon,
+  BanknotesIcon,
+} from "@heroicons/react/24/outline";
 
-import { ClockIcon, UserGroupIcon, BugAntIcon, BanknotesIcon } from "@heroicons/react/24/outline"
-
-
-export default function LocationIcons ({family_friendly, petfriendly, free_entry, open_24hrs}) {
-
-
+export default function LocationIcons({
+  family_friendly,
+  petfriendly,
+  free_entry,
+  open_24hrs,
+}) {
   return (
     <div className="flex gap-1 text-sky-500">
       {family_friendly && <UserGroupIcon className="h-5 w-5" />}
@@ -12,5 +18,5 @@ export default function LocationIcons ({family_friendly, petfriendly, free_entry
       {petfriendly && <BugAntIcon className="h-5 w-5" />}
       {open_24hrs && <ClockIcon className="h-5 w-5" />}
     </div>
-  )
+  );
 }

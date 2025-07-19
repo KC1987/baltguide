@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, ReactNode } from "react";
-import { createClient } from "@/config/supabase/client";
 import { Session, User } from "@supabase/supabase-js";
+
+import { createClient } from "@/config/supabase/client";
 
 interface AuthContextType {
   session: Session | null;
@@ -20,7 +21,7 @@ export const AuthContext = createContext<AuthContextType>({
 
 export default function AuthProvider({ children }: AuthProviderProps) {
   const supabase = createClient();
-  
+
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -28,14 +29,18 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     // Get initial session
     const getInitialSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
         if (error) {
-          console.error('Error getting session:', error);
+          console.error("Error getting session:", error);
         } else {
           setSession(session);
         }
       } catch (error) {
-        console.error('Error getting session:', error);
+        console.error("Error getting session:", error);
       } finally {
         setLoading(false);
       }
@@ -61,9 +66,5 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     loading,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

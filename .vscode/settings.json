@@ -1,3 +1,6 @@
 {
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.fontFamily": "\"SF Mono\"",
+  "editor.formatOnSave": true,
+  "files.autoSave": "afterDelay"
 }
