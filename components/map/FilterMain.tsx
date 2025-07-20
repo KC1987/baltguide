@@ -5,18 +5,18 @@ import { Button } from "@heroui/button";
 import { Input, Slider, CheckboxGroup, Checkbox, Divider } from "@heroui/react";
 
 export default function FilterMain({
-  getAttractions,
+  getLocations,
   filter,
   setFilter,
-  userGeolocation,
-  setUserGeolocation,
-  selectedDistance,
-  setSelectedDistance,
+  // userGeolocation,
+  // setUserGeolocation,
+  // selectedDistance,
+  // setSelectedDistance,
 }: any) {
   const [advancedMenuOpen, setAdvancedMenuOpen] = useState(false);
 
   function handleSearch() {
-    getAttractions();
+    getLocations();
   }
 
   function handleSelectionChange(name: any, selection: any) {
