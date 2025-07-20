@@ -29,46 +29,37 @@ INSERT INTO locations (
     audience_range,
     tags
 ) VALUES (
-    'Freedom Monument',
-    'freedom-monument',
-    'The Freedom Monument (Latvian: Brīvības piemineklis) is a 42.7-meter-tall granite and copper monument in the heart of Riga, commemorating soldiers killed during the Latvian War of Independence (1918-1920). Unveiled on November 18, 1935, and funded entirely by public donations, this iconic landmark has become the most important symbol of Latvia''s freedom, independence, and sovereignty. Designed by sculptor Kārlis Zāle with the project "Mirdzi kā zvaigzne!" (Shine Like a Star), the monument features 56 sculptures arranged in 13 groups across four levels, depicting Latvian culture, history, and values. At its pinnacle stands a 9-meter copper figure of Liberty, affectionately known as "Milda," holding three gilded stars representing Latvia''s historical regions: Kurzeme, Vidzeme, and Latgale. The monument''s base bears the inscription "Tēvzemei un Brīvībai" (For Fatherland and Freedom). During Soviet occupation, gatherings at the monument were strictly forbidden, though it remarkably survived demolition attempts. Today, it serves as the focal point for national celebrations, public gatherings, and official ceremonies, with an honor guard from the National Armed Forces standing watch and changing every hour from 9am to 6pm.',
-    56.9514,
-    24.1133,
-    'Brīvības bulvāris, Riga, Latvia, LV-1050',
+    'Latvian National Opera and Ballet',
+    'latvian-national-opera-and-ballet',
+    'The Latvian National Opera and Ballet (LNOB) is an internationally renowned opera house and performing arts center located in a magnificent neoclassical building at Aspazijas boulevard in Riga. Originally constructed as the Riga German Theatre in 1863 by architect Ludwig Bohnstedt, this iconic white building has a rich cultural heritage spanning over 160 years. The venue is famous for being the workplace of Richard Wagner, who served as Kapellmeister from 1837 to 1839. The opera house features four distinct performance spaces: the Great Hall with 946 seats, the New Hall with 300 seats, the Dress Circle Hall with 170 seats, and the Red Hall with 100 seats. During the season running from September to May, LNOB presents nearly 200 performances annually, including an average of six new productions balancing opera and ballet genres. The theater underwent extensive reconstruction from 1990-1995 and again in 2001 when modern annexes were added. Notable ballet dancers who have graced its stage include Mikhail Baryshnikov, Maris Liepa, and Alexander Godunov, bringing international fame to Latvian performing arts. The building is strategically located on the bank of the Riga Canal near the Freedom Monument, surrounded by beautiful gardens that enhance its architectural splendor. LNOB employs approximately 600 people and maintains its status as one of the most important cultural institutions in the Baltic region, regularly participating in international tours and festivals.',
+    56.9493,
+    24.1144,
+    'Aspazijas bulvāris 3, Riga, LV-1050, Latvia',
     'Riga',
     'Latvia',
+    false,
     true,
-    true,
-    true,
-    true,
+    false,
+    false,
     4.5,
-    'https://www.liveriga.com/en/3231-freedom-monument',
-    'Free admission - no entry fee required as the monument is located in an open public plaza',
-    'The monument is accessible 24/7 as it is located in a public pedestrian area. Honor guard is present daily from 9:00 AM to 6:00 PM, with changing of the guard ceremony every hour on the hour. The guard may not be present during severe weather conditions.',
-    'A towering symbol of Latvia''s enduring spirit of independence and national unity.',
+    'https://www.opera.lv/',
+    'Ticket prices vary by performance and seating: budget seats from €5-15, standard seats €15-45, premium seats €45-75. Special discounts available for students, pensioners, and groups of 10 or more. Children under 7 are only allowed at special family-friendly performances. An entrance ticket is required for each spectator regardless of age.',
+    'Box Office Hours: Monday CLOSED, Tuesday-Saturday 11:00-19:00, Sunday 11:00-18:00. Performance season runs from mid-September to end of May. Box office closes for summer break from June 21 to August 4, but tickets remain available online. Performance times vary - typically evening performances start at 19:00, matinee performances at 15:00. Advance ticket purchase recommended as popular performances often sell out.',
+    'Latvia''s premier opera house presenting world-class opera and ballet in a magnificent neoclassical setting.',
     ARRAY[]::jsonb[],
     'attraction',
-    ARRAY[]::jsonb[],
-    false,
-    ARRAY['["free"]'::jsonb],
-    ARRAY['[
-        {
-            "url": "https://pixabay.com/photos/freedom-monument-riga-latvia-2228013/",
-            "caption": "The Freedom Monument standing majestically in central Riga with its iconic copper Liberty figure holding three golden stars"
-        },
-        {
-            "url": "https://unsplash.com/photos/freedom-monument-riga",
-            "caption": "Honor guards standing at attention at the base of the Freedom Monument during the daily guard ceremony"
-        },
-        {
-            "url": "https://www.pexels.com/photo/freedom-monument-riga-latvia",
-            "caption": "Close-up view of the sculptural reliefs depicting Latvian culture and history at the monument''s base"
-        }
-    ]'::jsonb],
-    ARRAY['["culture-history", "unique-niche"]'::jsonb],
-    ARRAY['["none"]'::jsonb],
-    ARRAY['["nearby"]'::jsonb],
-    ARRAY['["wheelchair-accessible"]'::jsonb],
-    ARRAY['["children", "teenagers", "adults", "seniors", "family-friendly"]'::jsonb],
-    ARRAY['["monument", "historic-site", "war-memorial", "observation-deck"]'::jsonb]
+    ARRAY['"+371 67073777"'::jsonb, '"+371 67073715"'::jsonb],
+    true,
+    ARRAY['"budget"'::jsonb, '"moderate"'::jsonb],
+    ARRAY[
+        '{"url": "https://unsplash.com/photos/opera-house-neoclassical-architecture", "caption": "The magnificent neoclassical facade of the Latvian National Opera and Ballet"}'::jsonb,
+        '{"url": "https://pixabay.com/photos/riga-opera-house-latvia-architecture/", "caption": "Interior view of the Great Hall showing the ornate golden details and red velvet seating"}'::jsonb,
+        '{"url": "https://pexels.com/photo/latvian-opera-canal-riga/", "caption": "The opera house situated on the Riga Canal with surrounding gardens and fountain"}'::jsonb
+    ],
+    ARRAY['"arts-live-entertainment"'::jsonb, '"culture-history"'::jsonb],
+    ARRAY['"paid"'::jsonb],
+    ARRAY['"nearby"'::jsonb],
+    ARRAY['"wheelchair-accessible"'::jsonb],
+    ARRAY['"children"'::jsonb, '"teenagers"'::jsonb, '"adults"'::jsonb, '"seniors"'::jsonb, '"family-friendly"'::jsonb],
+    ARRAY['"theater"'::jsonb, '"opera"'::jsonb, '"ballet"'::jsonb, '"concert"'::jsonb, '"live-music"'::jsonb]
 );
