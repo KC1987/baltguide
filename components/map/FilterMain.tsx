@@ -1,363 +1,462 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@heroui/button";
+import { Button, Chip } from "@heroui/react";
 import { Input, Slider, CheckboxGroup, Checkbox, Divider } from "@heroui/react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MapPinIcon, FunnelIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { useBreakpoint } from "./hooks/useBreakpoint";
+
+interface FilterState {
+  searchText: string;
+  family_friendly?: boolean;
+  free_entry?: boolean;
+  petfriendly?: boolean;
+  open_24hrs?: boolean;
+  souvenirs?: boolean;
+  categories?: string[];
+  price_range?: string[];
+  audience_range?: string[];
+  parking?: string[];
+  wifi?: string[];
+  accessibility?: string[];
+  distanceSearch?: {
+    radius: number | string;
+    userLat: number | string;
+    userLon: number | string;
+  };
+}
+
+interface FilterMainProps {
+  getLocations: () => void;
+  filter: FilterState;
+  setFilter: (filter: FilterState) => void;
+}
 
 export default function FilterMain({
   getLocations,
   filter,
   setFilter,
-  // userGeolocation,
-  // setUserGeolocation,
-  // selectedDistance,
-  // setSelectedDistance,
-}: any) {
+}: FilterMainProps) {
   const [advancedMenuOpen, setAdvancedMenuOpen] = useState(false);
+  const { isMobile } = useBreakpoint();
 
   function handleSearch() {
     getLocations();
   }
 
-  function handleSelectionChange(name: any, selection: any) {
+  function handleSelectionChange(name: keyof FilterState, selection: string[] | boolean) {
     setFilter({ ...filter, [name]: selection });
   }
 
-  // function handleTagSelection(tags:any) {
-  //   //Remove doublicates
-  //   const filteredTags = tags.filter( tag => !filter.tags?.includes(tag) );
-
-  //   //
-  //   setFilter({...filter, tags: [...filter.tags, ...filteredTags]});
-  // };
-
   function getUserGeolocation() {
-    navigator.geolocation.getCurrentPosition((pos) => {
-      setFilter({
-        ...filter,
-        distanceSearch: {
-          ...filter.distanceSearch,
-          userLat: pos.coords.latitude,
-          userLon: pos.coords.longitude,
-        },
-      });
-      console.log(pos.coords.latitude);
-      console.log(pos.coords.longitude);
-    });
+    if (!navigator.geolocation) {
+      console.error('Geolocation is not supported by this browser.');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setFilter({
+          ...filter,
+          distanceSearch: {
+            ...filter.distanceSearch,
+            userLat: pos.coords.latitude,
+            userLon: pos.coords.longitude,
+          },
+        });
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000, // 5 minutes
+      }
+    );
   }
 
+  // Quick filter options for mobile chips
+  const quickFilters = [
+    { key: 'family_friendly', label: '👨‍👩‍👧‍👦 Family', isActive: filter.family_friendly },
+    { key: 'free_entry', label: '🆓 Free', isActive: filter.free_entry },
+    { key: 'petfriendly', label: '🐕 Pet OK', isActive: filter.petfriendly },
+    { key: 'open_24hrs', label: '🕒 24/7', isActive: filter.open_24hrs },
+    { key: 'souvenirs', label: '🛍️ Souvenirs', isActive: filter.souvenirs },
+  ];
+
+  const handleQuickFilterToggle = (filterKey: string) => {
+    const currentValue = filter[filterKey];
+    setFilter({ ...filter, [filterKey]: !currentValue });
+  };
+
+  const getActiveFilterCount = () => {
+    let count = 0;
+    if (filter.searchText) count++;
+    if (filter.categories?.length > 0) count++;
+    if (filter.price_range?.length > 0) count++;
+    if (filter.audience_range?.length > 0) count++;
+    if (filter.parking?.length > 0) count++;
+    if (filter.wifi?.length > 0) count++;
+    if (filter.accessibility?.length > 0) count++;
+    if (filter.distanceSearch?.radius && filter.distanceSearch.radius !== "0") count++;
+    quickFilters.forEach(qf => {
+      if (filter[qf.key]) count++;
+    });
+    return count;
+  };
+
+  // Mobile-first responsive layout
+  if (isMobile) {
+    return (
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        {/* Mobile Search Bar */}
+        <div className="p-4 pb-2">
+          <Input
+            placeholder="Search locations..."
+            type="text"
+            value={filter.searchText}
+            onChange={(e) => setFilter({ ...filter, searchText: e.target.value })}
+            startContent={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
+            size="lg"
+            className="w-full"
+            radius="full"
+          />
+        </div>
+
+        {/* Horizontal Quick Filter Chips */}
+        <div className="px-4 pb-3">
+          <div className="flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            {quickFilters.map((qf) => (
+              <motion.div
+                key={qf.key}
+                whileTap={{ scale: 0.95 }}
+                className="flex-shrink-0"
+              >
+                <Chip
+                  variant={qf.isActive ? "solid" : "bordered"}
+                  color={qf.isActive ? "primary" : "default"}
+                  className={`
+                    min-h-[44px] px-4 cursor-pointer select-none
+                    ${qf.isActive ? 'bg-blue-500 text-white' : 'bg-white border-gray-300'}
+                    hover:scale-105 transition-all duration-200
+                  `}
+                  onClick={() => handleQuickFilterToggle(qf.key)}
+                >
+                  {qf.label}
+                </Chip>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Mobile Search Button */}
+        <div className="px-4 pb-4">
+          <Button
+            color="primary"
+            size="lg"
+            onPress={handleSearch}
+            className="w-full min-h-[48px] text-base font-semibold"
+            startContent={<MagnifyingGlassIcon className="w-5 h-5" />}
+          >
+            Search Locations
+          </Button>
+        </div>
+
+        {/* Distance slider for mobile (if location enabled) */}
+        {filter.distanceSearch?.userLat && filter.distanceSearch.userLat !== "0" && (
+          <div className="px-4 pb-4 border-t border-gray-100 pt-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-medium text-gray-700">Search Radius</span>
+              <span className="text-sm text-gray-500">
+                {filter.distanceSearch?.radius || 0} km
+              </span>
+            </div>
+            <Slider
+              color="primary"
+              step={10}
+              maxValue={300}
+              minValue={0}
+              value={filter.distanceSearch?.radius || 0}
+              onChange={(value) =>
+                setFilter({
+                  ...filter,
+                  distanceSearch: { ...filter.distanceSearch, radius: value },
+                })
+              }
+              className="w-full"
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Tablet and Desktop Layout
   return (
-    <div className=" bg-sky-100 dark:bg-sky-800 w-full min-h-16 p-2 gap-2">
-      <div className="flex">
+    <div className="bg-sky-100 dark:bg-sky-800 w-full min-h-16 p-4 gap-4">
+      {/* Desktop/Tablet Search */}
+      <div className="flex gap-4 items-center mb-4">
         <Input
           placeholder="Search..."
           type="text"
           value={filter.searchText}
           onChange={(e) => setFilter({ ...filter, searchText: e.target.value })}
+          startContent={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
+          size="lg"
+          className="flex-1"
         />
+        <Button color="primary" size="lg" onPress={handleSearch} className="min-h-[48px]">
+          Search
+        </Button>
       </div>
-      <div>
-        <Checkbox
-          size="sm"
-          onValueChange={(isSelected: boolean) =>
-            handleSelectionChange("family_friendly", isSelected)
-          }
-        >
-          Family Friendly
-        </Checkbox>
-        <Checkbox
-          size="sm"
-          onValueChange={(isSelected: boolean) =>
-            handleSelectionChange("open_24hrs", isSelected)
-          }
-        >
-          Open 24hrs
-        </Checkbox>
-        <Checkbox
-          size="sm"
-          onValueChange={(isSelected: boolean) =>
-            handleSelectionChange("free_entry", isSelected)
-          }
-        >
-          Free Entry
-        </Checkbox>
-        <Checkbox
-          size="sm"
-          onValueChange={(isSelected: boolean) =>
-            handleSelectionChange("souvenirs", isSelected)
-          }
-        >
-          Souvenirs
-        </Checkbox>
-        <Checkbox
-          size="sm"
-          onValueChange={(isSelected: boolean) =>
-            handleSelectionChange("petfriendly", isSelected)
-          }
-        >
-          Petfriendly
-        </Checkbox>
+
+      {/* Quick Filters for Desktop */}
+      <div className="flex flex-wrap gap-3 mb-4">
+        {quickFilters.map((qf) => (
+          <Chip
+            key={qf.key}
+            variant={qf.isActive ? "solid" : "bordered"}
+            color={qf.isActive ? "primary" : "default"}
+            className={`
+              min-h-[44px] px-4 cursor-pointer select-none
+              ${qf.isActive ? 'bg-blue-500 text-white' : 'bg-white border-gray-300'}
+              hover:scale-105 transition-all duration-200
+            `}
+            onClick={() => handleQuickFilterToggle(qf.key)}
+          >
+            {qf.label}
+          </Chip>
+        ))}
       </div>
-      <div className="flex gap-2 items-center">
+
+      {/* Distance Search */}
+      <div className="flex gap-4 items-center mb-4">
         <Slider
-          className="max-w-md"
+          className="flex-1 max-w-md"
           color="primary"
-          defaultValue={0}
           label="Distance (km)"
           maxValue={300}
           minValue={0}
           showSteps={true}
-          size="sm"
+          size="lg"
           step={30}
           value={filter.distanceSearch?.radius || 0}
-          onChange={(e) =>
+          onChange={(value) =>
             setFilter({
               ...filter,
-              distanceSearch: { ...filter.distanceSearch, radius: e },
+              distanceSearch: { ...filter.distanceSearch, radius: value },
             })
           }
         />
-        <Button color="secondary" size="sm" onPress={getUserGeolocation}>
-          Get Geolocation
+        <Button 
+          color="secondary" 
+          size="lg" 
+          onPress={getUserGeolocation}
+          startContent={<MapPinIcon className="w-5 h-5" />}
+          className="min-h-[48px]"
+        >
+          Get Location
         </Button>
-        <p className="text-xs">
-          Lat: {filter.distanceSearch?.userLat || "N/A"}
-        </p>
-        <p className="text-xs">
-          Lon: {filter.distanceSearch?.userLon || "N/A"}
-        </p>
       </div>
 
-      <Button className="" color="warning" onPress={handleSearch}>
-        Search
-      </Button>
-      <div>{JSON.stringify(filter)}</div>
+      {filter.distanceSearch?.userLat && filter.distanceSearch.userLat !== "0" && (
+        <div className="text-sm text-gray-600 mb-4 p-3 bg-gray-50 rounded-lg">
+          📍 Location: {parseFloat(filter.distanceSearch.userLat).toFixed(4)}, {parseFloat(filter.distanceSearch.userLon).toFixed(4)}
+        </div>
+      )}
+
+      {/* Advanced Menu Toggle */}
       <Button
         color="primary"
-        size="sm"
+        variant="bordered"
+        size="lg"
         onPress={() => setAdvancedMenuOpen(!advancedMenuOpen)}
+        startContent={<FunnelIcon className="w-5 h-5" />}
+        endContent={
+          getActiveFilterCount() > 0 && (
+            <Chip size="sm" color="primary" className="ml-2">
+              {getActiveFilterCount()}
+            </Chip>
+          )
+        }
+        className="min-h-[48px]"
       >
-        Advanced Menu
+        Advanced Filters
       </Button>
 
       {/* Animated Advanced Menu */}
-      <div
-        className={`overflow-hidden container transition-all duration-300 ease-in-out ${
-          advancedMenuOpen ? "h-[320] opacity-100" : "h-0 opacity-0"
-        }`}
-      >
-        {/* Categories */}
-        <div className="">
-          <span>
-            <h1 className="text-lg font-semibold my-2">Categories</h1>
-            {/* <Square3Stack3DIcon /> */}
-          </span>
-          <CheckboxGroup
-            className=""
-            name="categories"
-            orientation="horizontal"
-            size="sm"
-            value={filter.categories}
-            onValueChange={(selection) =>
-              handleSelectionChange("categories", selection)
-            }
+      <AnimatePresence>
+        {advancedMenuOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden mt-4"
           >
-            <table>
-              <tbody>
-                <tr>
-                  <td>
-                    <Checkbox value="culture-history">
+            <div className="bg-white rounded-xl p-6 shadow-lg">
+              {/* Categories */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  🏛️ Categories
+                </h3>
+                <CheckboxGroup
+                  value={filter.categories || []}
+                  onValueChange={(selection) =>
+                    handleSelectionChange("categories", selection)
+                  }
+                  className="gap-3"
+                >
+                  <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                    <Checkbox value="culture-history" className="min-h-[44px]">
                       Culture & History
                     </Checkbox>
-                  </td>
-                  <td>
-                    <Checkbox value="parks-nature">Parks & Nature</Checkbox>
-                  </td>
-                  <td>
-                    <Checkbox value="amusement-theme-parks">
+                    <Checkbox value="parks-nature" className="min-h-[44px]">
+                      Parks & Nature
+                    </Checkbox>
+                    <Checkbox value="amusement-theme-parks" className="min-h-[44px]">
                       Amusement & Theme Parks
                     </Checkbox>
-                  </td>
-                  <td>
-                    <Checkbox value="arts-live-entertainment">
+                    <Checkbox value="arts-live-entertainment" className="min-h-[44px]">
                       Arts & Live Entertainment
                     </Checkbox>
-                  </td>
-                  <td>
-                    <Checkbox value="nightlife-bars">Nightlife & Bars</Checkbox>
-                  </td>
-                  <td>
-                    <Checkbox value="sports-recreation">
+                    <Checkbox value="nightlife-bars" className="min-h-[44px]">
+                      Nightlife & Bars
+                    </Checkbox>
+                    <Checkbox value="sports-recreation" className="min-h-[44px]">
                       Sports & Recreation
                     </Checkbox>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <Checkbox value="shopping-markets">
+                    <Checkbox value="shopping-markets" className="min-h-[44px]">
                       Shopping & Markets
                     </Checkbox>
-                  </td>
-                  <td>
-                    <Checkbox value="restaurants-dining">
+                    <Checkbox value="restaurants-dining" className="min-h-[44px]">
                       Restaurants & Dining
                     </Checkbox>
-                  </td>
-                  <td>
-                    <Checkbox value="educational-interactive">
+                    <Checkbox value="educational-interactive" className="min-h-[44px]">
                       Educational & Interactive
                     </Checkbox>
-                  </td>
-                  <td>
-                    <Checkbox value="wellness-relaxation">
+                    <Checkbox value="wellness-relaxation" className="min-h-[44px]">
                       Wellness & Relaxation
                     </Checkbox>
-                  </td>
-                  <td>
-                    <Checkbox value="transport-tours">
+                    <Checkbox value="transport-tours" className="min-h-[44px]">
                       Transport & Tours
                     </Checkbox>
-                  </td>
-                  <td>
-                    <Checkbox value="unique-niche">
+                    <Checkbox value="unique-niche" className="min-h-[44px]">
                       Unique & Niche Attractions
                     </Checkbox>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </CheckboxGroup>
-          {/* <div className="" >
-            {filter.categories?.length > 0 && filter.categories.map( (cat, i) => 
-            <CheckboxGroup onValueChange={ sel => handleTagSelection(sel) } size="sm" orientation="horizontal" key={cat} >
-              { taglist[cat].map(( tag, i ) => (
-                    <Checkbox key={tag} value={tag} >{tag}</Checkbox>
-                ))}
-            </CheckboxGroup>
-          )
-            }
-          </div> */}
-        </div>
-        <Divider className="my-1" />
+                  </div>
+                </CheckboxGroup>
+              </div>
 
-        {/* Price Range */}
-        <div className="">
-          <span>
-            <h1 className="text-lg font-semibold my-2">Price Range</h1>
-            {/* <Square3Stack3DIcon /> */}
-          </span>
-          <CheckboxGroup
-            name="price_range"
-            value={filter.price_range}
-            onValueChange={(selection) => handleSelectionChange("price_range", selection)}
-            orientation="horizontal"
-            // className="max-h-8"
-            size="sm"
-          >
-            <Checkbox value="free">Free</Checkbox>
-            <Checkbox value="budget">Budget (0 - 10 Eur)</Checkbox>
-            <Checkbox value="moderate">Moderate (10 - 25 Eur) </Checkbox>
-            <Checkbox value="expensive">Expensive (25 - 50 Eur)</Checkbox>
-            <Checkbox value="luxury">Luxury (50+ Eur)</Checkbox>
-          </CheckboxGroup>
-        </div>
-        <Divider className="my-1" />
+              <Divider className="my-6" />
 
-        {/* Audience Range */}
-        <div className="">
-          <span>
-            <h1 className="text-lg font-semibold my-2">Audience Range</h1>
-            {/* <Square3Stack3DIcon /> */}
-          </span>
-          <CheckboxGroup
-            name="audience_range"
-            value={filter.audience_range}
-            onValueChange={(selection) => handleSelectionChange("audience_range", selection)}
-            orientation="horizontal"
-            // className="max-h-8"
-            size="sm"
-          >
-            <Checkbox value="infants">Infants (0-2 years)</Checkbox>
-            <Checkbox value="toddlers">Toddlers (2-5 years)</Checkbox>
-            <Checkbox value="children">Children (6-12 years)</Checkbox>
-            <Checkbox value="teenagers">Teenagers (13-17 years)</Checkbox>
-            <Checkbox value="adults">Adults (18+ years)</Checkbox>
-            <Checkbox value="seniors">Seniors (65+ years)</Checkbox>
-          </CheckboxGroup>
-        </div>
-        <Divider className="my-1" />
+              {/* Price Range */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  💰 Price Range
+                </h3>
+                <CheckboxGroup
+                  value={filter.price_range || []}
+                  onValueChange={(selection) => handleSelectionChange("price_range", selection)}
+                  className="gap-3"
+                >
+                  <div className="flex flex-wrap gap-3">
+                    <Checkbox value="free" className="min-h-[44px]">Free</Checkbox>
+                    <Checkbox value="budget" className="min-h-[44px]">Budget (€0-10)</Checkbox>
+                    <Checkbox value="moderate" className="min-h-[44px]">Moderate (€10-25)</Checkbox>
+                    <Checkbox value="expensive" className="min-h-[44px]">Expensive (€25-50)</Checkbox>
+                    <Checkbox value="luxury" className="min-h-[44px]">Luxury (€50+)</Checkbox>
+                  </div>
+                </CheckboxGroup>
+              </div>
 
-        <div className="flex gap-10">
-          {/* Parking */}
-          <div className="">
-            <span>
-              <h1 className="text-lg font-semibold my-2">Parking</h1>
-              {/* <Square3Stack3DIcon /> */}
-            </span>
-            <CheckboxGroup
-              name="parking"
-              value={filter.parking}
-              onValueChange={(selection) => handleSelectionChange("parking", selection)}
-              orientation="horizontal"
-              // className="max-h-8"
-              size="sm"
-            >
-              <Checkbox value="free">Free</Checkbox>
-              <Checkbox value="paid">Paid</Checkbox>
-              <Checkbox value="nearby">Nearby</Checkbox>
-            </CheckboxGroup>
-          </div>
-          {/* <Divider className="my-1" /> */}
+              <Divider className="my-6" />
 
-          {/* WiFi */}
-          <div className="">
-            <span>
-              <h1 className="text-lg font-semibold my-2">WiFi</h1>
-              {/* <Square3Stack3DIcon /> */}
-            </span>
-            <CheckboxGroup
-              name="wifi"
-              value={filter.wifi}
-              onValueChange={(selection) => handleSelectionChange("wifi", selection)}
-              orientation="horizontal"
-              // className="max-h-8"
-              size="sm"
-            >
-              <Checkbox value="free">Free</Checkbox>
-              <Checkbox value="free-limited">Free Limited</Checkbox>
-              <Checkbox value="paid">Paid</Checkbox>
-              <Checkbox value="none">None</Checkbox>
-            </CheckboxGroup>
-          </div>
+              {/* Audience Range */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  👥 Suitable For
+                </h3>
+                <CheckboxGroup
+                  value={filter.audience_range || []}
+                  onValueChange={(selection) => handleSelectionChange("audience_range", selection)}
+                  className="gap-3"
+                >
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                    <Checkbox value="infants" className="min-h-[44px]">Infants (0-2)</Checkbox>
+                    <Checkbox value="toddlers" className="min-h-[44px]">Toddlers (2-5)</Checkbox>
+                    <Checkbox value="children" className="min-h-[44px]">Children (6-12)</Checkbox>
+                    <Checkbox value="teenagers" className="min-h-[44px]">Teenagers (13-17)</Checkbox>
+                    <Checkbox value="adults" className="min-h-[44px]">Adults (18+)</Checkbox>
+                    <Checkbox value="seniors" className="min-h-[44px]">Seniors (65+)</Checkbox>
+                  </div>
+                </CheckboxGroup>
+              </div>
 
-          {/* Accessibility */}
-          <div className="">
-            <span>
-              <h1 className="text-lg font-semibold my-2">Accessibility</h1>
-              {/* <Square3Stack3DIcon /> */}
-            </span>
-            <CheckboxGroup
-              name="accessibility"
-              value={filter.accessibility}
-              onValueChange={(selection) => handleSelectionChange("accessibility", selection)}
-              orientation="horizontal"
-              // className="max-h-8"
-              size="sm"
-            >
-              <Checkbox value="wheelchair-accessible">
-                Wheelchair Accessible
-              </Checkbox>
-              <Checkbox value="accessible-restrooms">
-                Accessible Restrooms
-              </Checkbox>
-              <Checkbox value="audio-tours">Audio Tours</Checkbox>
-              <Checkbox value="braille-signage">Braille Signage</Checkbox>
-            </CheckboxGroup>
-          </div>
-          {/* <Divider className="my-1" /> */}
-        </div>
-        <Divider className="my-1" />
-      </div>
+              <Divider className="my-6" />
+
+              {/* Amenities */}
+              <div className="grid md:grid-cols-3 gap-6">
+                {/* Parking */}
+                <div>
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    🚗 Parking
+                  </h4>
+                  <CheckboxGroup
+                    value={filter.parking || []}
+                    onValueChange={(selection) => handleSelectionChange("parking", selection)}
+                    className="gap-2"
+                  >
+                    <Checkbox value="free" className="min-h-[44px]">Free</Checkbox>
+                    <Checkbox value="paid" className="min-h-[44px]">Paid</Checkbox>
+                    <Checkbox value="nearby" className="min-h-[44px]">Nearby</Checkbox>
+                  </CheckboxGroup>
+                </div>
+
+                {/* WiFi */}
+                <div>
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    📶 WiFi
+                  </h4>
+                  <CheckboxGroup
+                    value={filter.wifi || []}
+                    onValueChange={(selection) => handleSelectionChange("wifi", selection)}
+                    className="gap-2"
+                  >
+                    <Checkbox value="free" className="min-h-[44px]">Free</Checkbox>
+                    <Checkbox value="free-limited" className="min-h-[44px]">Free Limited</Checkbox>
+                    <Checkbox value="paid" className="min-h-[44px]">Paid</Checkbox>
+                    <Checkbox value="none" className="min-h-[44px]">None</Checkbox>
+                  </CheckboxGroup>
+                </div>
+
+                {/* Accessibility */}
+                <div>
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    ♿ Accessibility
+                  </h4>
+                  <CheckboxGroup
+                    value={filter.accessibility || []}
+                    onValueChange={(selection) => handleSelectionChange("accessibility", selection)}
+                    className="gap-2"
+                  >
+                    <Checkbox value="wheelchair-accessible" className="min-h-[44px]">
+                      Wheelchair Accessible
+                    </Checkbox>
+                    <Checkbox value="accessible-restrooms" className="min-h-[44px]">
+                      Accessible Restrooms
+                    </Checkbox>
+                    <Checkbox value="audio-tours" className="min-h-[44px]">Audio Tours</Checkbox>
+                    <Checkbox value="braille-signage" className="min-h-[44px]">Braille Signage</Checkbox>
+                  </CheckboxGroup>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

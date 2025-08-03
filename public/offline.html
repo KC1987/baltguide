@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BaltGuide - Offline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: background 0.3s ease;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            }
+        }
+        
+        .offline-container {
+            text-align: center;
+            max-width: 400px;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .offline-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .offline-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #2563eb;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary:hover {
+            background: white;
+            color: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: white;
+        }
+        
+        .connection-status {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            background: #ef4444;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        .status-indicator.online {
+            background: #22c55e;
+            animation: none;
+        }
+        
+        .offline-features {
+            margin-top: 2rem;
+            text-align: left;
+        }
+        
+        .offline-features h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .feature-list {
+            list-style: none;
+            display: grid;
+            gap: 0.5rem;
+        }
+        
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .feature-list li::before {
+            content: "✓";
+            margin-right: 8px;
+            color: #22c55e;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 480px) {
+            .offline-container {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .offline-icon {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">🌐</div>
+        <h1>You're Offline</h1>
+        <p>Don't worry! BaltGuide works offline too. You can still browse cached locations and use downloaded content.</p>
+        
+        <div class="offline-actions">
+            <button class="btn btn-primary" onclick="tryReconnect()">
+                Try to Reconnect
+            </button>
+            <a href="/" class="btn btn-secondary">
+                Browse Offline Content
+            </a>
+        </div>
+        
+        <div class="connection-status">
+            <span class="status-indicator" id="statusIndicator"></span>
+            <span id="statusText">Connection status: Offline</span>
+        </div>
+        
+        <div class="offline-features">
+            <h3>Available Offline</h3>
+            <ul class="feature-list">
+                <li>Browse cached locations</li>
+                <li>View downloaded maps</li>
+                <li>Access saved favorites</li>
+                <li>Search offline content</li>
+                <li>View location details</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let isOnline = navigator.onLine;
+        
+        function updateConnectionStatus() {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            
+            if (navigator.onLine) {
+                indicator.classList.add('online');
+                statusText.textContent = 'Connection status: Online';
+                
+                // Auto-redirect when back online
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+            } else {
+                indicator.classList.remove('online');
+                statusText.textContent = 'Connection status: Offline';
+            }
+        }
+        
+        function tryReconnect() {
+            // Attempt to fetch a lightweight resource
+            fetch('/manifest.json', { 
+                method: 'HEAD',
+                cache: 'no-cache' 
+            })
+            .then(() => {
+                window.location.href = '/';
+            })
+            .catch(() => {
+                // Still offline, show message
+                const btn = document.querySelector('.btn-primary');
+                const originalText = btn.textContent;
+                btn.textContent = 'Still Offline...';
+                btn.disabled = true;
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }, 2000);
+            });
+        }
+        
+        // Listen for online/offline events
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+        
+        // Check connection status periodically
+        setInterval(updateConnectionStatus, 5000);
+        
+        // Initial status check
+        updateConnectionStatus();
+        
+        // Register service worker if not already registered
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('[Offline Page] SW registered:', registration);
+                })
+                .catch(error => {
+                    console.log('[Offline Page] SW registration failed:', error);
+                });
+        }
+        
+        // Handle back button
+        window.addEventListener('popstate', () => {
+            if (navigator.onLine) {
+                window.location.reload();
+            }
+        });
+    </script>
+</body>
+</html>
